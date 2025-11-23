@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@{
+    ViewData["Title"] = "Buzzlings - Account";
+}
+
+@model Buzzlings.Web.Models.UpdateUsernameViewModel
+
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="text-center">
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <b>Change username</b>
+                </div>
+            </div>
+        </div>
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="max-width: 400px; width: 100%; margin: auto;">
+                <div class="card-body p-3">
+                    <form method="post" asp-controller="Account" asp-action="ChangeUsername">
+                        @Html.AntiForgeryToken() <!-- CSRF protection -->
+
+                        <div class="mb-3">
+                            <label asp-for="Username" class="form-label"><b>New username</b></label>
+                            <input asp-for="Username" type="text" class="form-control" id="username" placeholder="Enter your new username" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            @if (ViewData.ModelState.ContainsKey("InvalidRegistrationAttempt"))
+                            {
+                                @foreach (ModelError errorMessage in ViewData.ModelState["InvalidRegistrationAttempt"]!.Errors)
+                                {
+                                    <p><span class="text-danger">@errorMessage.ErrorMessage</span></p>
+                                }
+                            }
+                        </div>
+                        <button type="submit" class="btn btn-dark">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <a asp-controller="Account" asp-action="Back" class="btn btn-dark w-48">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

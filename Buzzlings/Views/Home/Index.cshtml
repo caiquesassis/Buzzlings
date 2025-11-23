@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Buzzlings";
+}
+
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="text-center">
+        <img src="../images/BuzzlingsLogo.png" style="width:50%; height:50%;" />
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="max-width: 400px; width: 100%; margin: auto;">
+                <div class="card-body p-3">
+                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                        <a asp-controller="Home" asp-action="LogIn" class="btn btn-dark w-48">Log in</a>
+                        <a asp-controller="Home" asp-action="Register" class="btn btn-dark w-48">Register</a>
+                        <a href="#" class="btn btn-dark w-48">Top Hives</a>
+                        <a asp-controller="Home" asp-action="About" class="btn btn-dark w-48">About</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="custom-panel-wrapper mt-2" style="max-width: 200px; width: 50%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <div class="text-center">
+                        <b>Made by <a target="_blank" rel="noopener noreferrer" href="https://github.com/caiquesassis">Caique Assis</a></b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
