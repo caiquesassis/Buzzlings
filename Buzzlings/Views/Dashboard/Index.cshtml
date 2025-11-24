@@ -2,28 +2,65 @@
     ViewData["Title"] = "Buzzlings";
 }
 
-<div class="text-center">
-    <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-        <div class="card custom-panel" style="width: 100%;">
-            <div class="card-body p-1">
-                <b>🐝 Hello @User.Identity!.Name! 🐝</b>
+@model DashboardViewModel
+
+<div class="container">
+    <div class="text-center">
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <b>🐝 Hello @User.Identity!.Name! 🐝</b>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="custom-panel-wrapper mt-2" style="max-width: 700px; width: 100%; margin: auto;">
-    <div class="card custom-panel" style="max-width: 700px; width: 100%; margin: auto;">
-        <div class="card-body p-2">
-            <div class="d-flex flex-wrap justify-content-between gap-2">
-                <a asp-controller="Home" asp-action="Index" class="btn btn-dark w-48">Home</a>
-                <a asp-controller="Account" asp-action="ChangeUsername" class="btn btn-dark w-48">Change username</a>
-                <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-dark w-48">Change password</a>
-                <a asp-controller="Account" asp-action="DeleteAccount" class="btn btn-dark w-48">Delete account</a>
-                <a asp-controller="Dashboard" asp-action="LogOut" class="btn btn-dark w-48">Log out</a>
+    <div class="custom-panel-wrapper mt-2" style="max-width: 700px; width: 100%; margin: auto;">
+        <div class="card custom-panel" style="max-width: 700px; width: 100%; margin: auto;">
+            <div class="card-body p-2">
+                <div class="d-flex flex-wrap justify-content-between gap-2">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-dark w-48">Home</a>
+                    <a asp-controller="Account" asp-action="ChangeUsername" class="btn btn-dark w-48">Change username</a>
+                    <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-dark w-48">Change password</a>
+                    <a asp-controller="Account" asp-action="DeleteAccount" class="btn btn-dark w-48">Delete account</a>
+                    <a asp-controller="Dashboard" asp-action="LogOut" class="btn btn-dark w-48">Log out</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
-    Ayy
+    <div class="vertical-center">
+        @if (Model.User?.HiveId is not null)
+        {
+            <p>AYYY LMAO</p>
+        }
+        else
+        {
+            <div class="text-center">
+                <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+                    <div class="card custom-panel" style="width: 100%;">
+                        <div class="card-body p-3">
+                            <div class="text-center">
+                                <b>You do not have a hive yet - time to create one!</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+                    <div class="card custom-panel" style="max-width: 400px; width: 100%; margin: auto;">
+                        <div class="card-body p-3">
+                            <form method="post" asp-controller="Dashboard" asp-action="CreateHive">
+                                @Html.AntiForgeryToken() <!-- CSRF protection -->
+
+                                <div class="mb-3">
+                                    <label asp-for="HiveName" class="form-label"><b>Hive name</b></label>
+                                    <input asp-for="HiveName" type="text" class="form-control" id="hivename" placeholder="Enter the hive name" />
+                                    <span asp-validation-for="HiveName" class="text-danger"></span>
+                                </div>
+                                <button type="submit" class="btn btn-dark">Create</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

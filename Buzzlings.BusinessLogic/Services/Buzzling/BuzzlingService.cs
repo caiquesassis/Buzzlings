@@ -38,5 +38,11 @@ namespace Buzzlings.BusinessLogic.Services.Buzzling
             _unitOfWork.BuzzlingRepository.Remove(buzzling);
             await _unitOfWork.Save();
         }
+
+        public async Task DeleteRange(ICollection<Data.Models.Buzzling> buzzlings)
+        {
+            _unitOfWork.BuzzlingRepository.RemoveRange(buzzlings);
+            await _unitOfWork.Save();
+        }
     }
 }

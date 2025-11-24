@@ -51,3 +51,30 @@ body {
     border: 2px solid white; /* Add a border to the button */
     border-radius: 10px; /* Rounded corners for buttons */
 }
+
+/* Styling to allow vertical centering in the Dashboard */
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+}
+
+.text-center, .custom-panel-wrapper {
+    /* This ensures the first two elements stay at the top */
+    width: 100%;
+}
+
+.vertical-center {
+    /* This makes the div take up remaining space and centers it vertically */
+    flex-grow: 1; /* It will grow to fill the remaining space */
+    display: flex;
+    justify-content: center; /* Horizontally center content */
+    align-items: center; /* Vertically center content */
+    /* padding: 20px; */ /* Optional: Add padding to prevent content from sticking to edges */
+}

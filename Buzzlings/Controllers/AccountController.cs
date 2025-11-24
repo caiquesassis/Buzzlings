@@ -1,4 +1,6 @@
-﻿using Buzzlings.BusinessLogic.Services.User;
+﻿using Buzzlings.BusinessLogic.Services.Buzzling;
+using Buzzlings.BusinessLogic.Services.Hive;
+using Buzzlings.BusinessLogic.Services.User;
 using Buzzlings.Data.Models;
 using Buzzlings.Web.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,11 +12,16 @@ namespace Buzzlings.Web.Controllers
     public class AccountController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IHiveService _hiveService;
+        private readonly IBuzzlingService _buzzlingService;
         private readonly SignInManager<User> _signInManager;
 
-        public AccountController(IUserService userService, SignInManager<User> signInManager)
+        public AccountController(IUserService userService, IHiveService hiveService,
+            IBuzzlingService buzzlingService, SignInManager<User> signInManager)
         {
             _userService = userService;
+            _hiveService = hiveService;
+            _buzzlingService = buzzlingService;
             _signInManager = signInManager;
         }
 
@@ -137,6 +144,21 @@ namespace Buzzlings.Web.Controllers
 
             if (user is not null)
             {
+                if (user.HiveId is not null)
+                {
+                    Hive hive = await _hiveService.GetById(user.HiveId.Value);
+                    
+                    if (hive is not null)
+                    {
+                        if (hive.Buzzlings is not null)
+                        {
+                            await _buzzlingService.DeleteRange(hive.Buzzlings);
+                        }
+
+                        await _hiveService.Delete(hive);
+                    }
+                }
+
                 var result = await _userService.Delete(user);
 
                 if (result.Succeeded)
@@ -147,13 +169,6 @@ namespace Buzzlings.Web.Controllers
                     await _signInManager.SignOutAsync();
 
                     return RedirectToAction("DeleteSuccess", "Account");
-                }
-                else
-                {
-                    foreach (IdentityError error in result.Errors)
-                    {
-                        ModelState.AddModelError("InvalidRegistrationAttempt", error.Description);
-                    }
                 }
             }
             else

@@ -5,7 +5,7 @@ namespace Buzzlings.Data.Models
     public class Hive
     {
         public int Id { get; set; }
-        [StringLength(30, MinimumLength = 3)]
+        [StringLength(20, MinimumLength = 3)]
         [Required]
         public string? Name { get; set; }
         public int? Age { get; set; }
