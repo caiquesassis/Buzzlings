@@ -4,14 +4,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Buzzlings.Web.Models
 {
-    public class DashboardViewModel
+    public class UpdateHiveNameViewModel
     {
         public User? User { get; set; }
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "Hive name must be 3 - 20 characters long.")]
-        [Display(Name = "Hive name")]
         [Required(ErrorMessage = "Hive name is required.")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "Hive name must be 3 - 20 characters long.")]
         [NotWhitespace(ErrorMessage = "Hive name cannot contain only whitespace.")]
+        [Display(Name = "Hive name")]
         public string? HiveName { get; set; }
-        public bool IgnoreHiveNameValidation { get; set; } = true;
     }
 }

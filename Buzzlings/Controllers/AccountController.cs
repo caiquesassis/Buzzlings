@@ -26,6 +26,12 @@ namespace Buzzlings.Web.Controllers
         }
 
         [Authorize]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [Authorize]
         public IActionResult ChangeUsername()
         {
             return View();
@@ -168,7 +174,92 @@ namespace Buzzlings.Web.Controllers
 
                     await _signInManager.SignOutAsync();
 
-                    return RedirectToAction("DeleteSuccess", "Account");
+                    return RedirectToAction("DeleteAccountSuccess", "Account");
+                }
+            }
+            else
+            {
+                throw new NullReferenceException("Couldn't find user.");
+            }
+
+            return View();
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ChangeHiveName()
+        {
+            User user = await _userService.GetUser(User);
+
+            UpdateHiveNameViewModel updateHiveNameVM = new UpdateHiveNameViewModel { User = user };
+
+            return View(updateHiveNameVM);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeHiveName(UpdateHiveNameViewModel updateHiveNameVM)
+        {
+            User user = await _userService.GetUser(User);
+
+            updateHiveNameVM.User = user;
+
+            if (ModelState.IsValid)
+            {
+                if (user is not null)
+                {
+                    if (user.HiveId is not null)
+                    {
+                        Hive hive = await _hiveService.GetById(user.HiveId.Value);
+
+                        hive.Name = updateHiveNameVM.HiveName;
+
+                        await _hiveService.Update(hive);
+
+                        return RedirectToAction("UpdateSuccess", "Account");
+                    }
+                }
+                else
+                {
+                    throw new NullReferenceException("Couldn't find user.");
+                }
+            }
+
+            return View(updateHiveNameVM);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> DeleteHive()
+        {
+            User user = await _userService.GetUser(User);
+
+            return View(user);
+        }
+
+        [Authorize]
+        [HttpPost, ActionName("DeleteHive")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteHiveConfirmed()
+        {
+            User user = await _userService.GetUser(User);
+
+            if (user is not null)
+            {
+                if (user.HiveId is not null)
+                {
+                    Hive hive = await _hiveService.GetById(user.HiveId.Value);
+
+                    if (hive is not null)
+                    {
+                        if (hive.Buzzlings is not null)
+                        {
+                            await _buzzlingService.DeleteRange(hive.Buzzlings);
+                        }
+
+                        await _hiveService.Delete(hive);
+
+                        return RedirectToAction("DeleteHiveSuccess", "Account");
+                    }
                 }
             }
             else
@@ -185,7 +276,13 @@ namespace Buzzlings.Web.Controllers
             return View();
         }
 
-        public IActionResult DeleteSuccess()
+        public IActionResult DeleteAccountSuccess()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult DeleteHiveSuccess()
         {
             return View();
         }
@@ -193,7 +290,7 @@ namespace Buzzlings.Web.Controllers
         [Authorize]
         public IActionResult Back()
         {
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction("Index", "Account");
         }
     }
 }
