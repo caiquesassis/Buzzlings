@@ -33,7 +33,7 @@ body {
   text-align: start;
 }
 
-/* Custom styling for the panel */
+/* Custom styling for the panel ======================= */
 
 .custom-panel-wrapper {
     border: 4px solid white;
@@ -52,7 +52,7 @@ body {
     border-radius: 10px;
 }
 
-/* Styling to allow vertical centering in the Dashboard */
+/* Styling to allow vertical centering in the Dashboard ============ */
 
 html, body {
     height: 100%;
@@ -61,8 +61,9 @@ html, body {
 
 .container {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: flex-start; /* Align all elements at the top */
+    height: 100%;
 }
 
 .text-center, .custom-panel-wrapper {
@@ -71,14 +72,39 @@ html, body {
 }
 
 .vertical-center {
-    /* This makes the div take up remaining space and centers it vertically */
-    flex-grow: 1; /* It will grow to fill the remaining space */
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center; /* Vertically center content */
+    align-items: center; /* Center content horizontally */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    text-align: center;
 }
 
-/* Event log styling */
+/* Flex container to place event log and buzzlings table side by side =============== */
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Aligns items to the top */
+    gap: 20px;
+}
+
+/* Event log container (left side) */
+.event-log-container {
+    width: 50%;
+}
+
+/* Buzzlings table container (right side) */
+.buzzlings-table-container {
+    width: 50%;
+}
+
+/* Container below the event log for more elements */
+.additional-elements-container {
+    margin-top: 20px;
+}
+
+/* Event log styling ============================================ */
 
 .event-log {
     width: 100%;
@@ -92,7 +118,7 @@ html, body {
     color: #000;
 }
 
-/* Buzzlings table styling */
+/* Buzzlings table styling  =================================== */
 
 .table-container {
     max-height: 300px;
