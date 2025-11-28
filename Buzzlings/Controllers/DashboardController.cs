@@ -34,6 +34,11 @@ namespace Buzzlings.Web.Controllers
 
             dashboardVM.User = user;
 
+            if (dashboardVM.User.HiveId.HasValue)
+            {
+                dashboardVM.User.Hive = await _hiveService.GetById(dashboardVM.User.HiveId.Value);
+            }
+
             if (dashboardVM.IgnoreHiveNameValidation)
             {
                 if (ModelState.ContainsKey("HiveName"))
@@ -65,6 +70,34 @@ namespace Buzzlings.Web.Controllers
             }
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);
+        }
+
+        public async Task UpdateSimulationState()
+        {
+
+        }
+
+        public async Task<IActionResult> GetEventLogs()
+        {
+            User user = await _userService.GetUser(User);
+
+            if (user.HiveId.HasValue)
+            {
+                Hive hive = await _hiveService.GetById(user.HiveId.Value);
+
+                if (hive.EventLog is null)
+                {
+                    hive.EventLog = new List<string>();
+
+                    hive.EventLog?.Add(hive.Name + " is born!");
+
+                    await _hiveService.Update(hive);
+                }
+
+                return Json(new { logs = hive.EventLog });
+            }
+
+            return Json(new { logs = new List<string>() });
         }
 
         public async Task<IActionResult> LogOut()

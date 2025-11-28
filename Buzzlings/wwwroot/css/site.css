@@ -36,20 +36,20 @@ body {
 /* Custom styling for the panel */
 
 .custom-panel-wrapper {
-    border: 4px solid white; /* Outer border (larger) */
-    border-radius: 20px; /* Rounded corners for outer border */
+    border: 4px solid white;
+    border-radius: 20px;
 }
 
 .custom-panel {
-    border: 2px solid black; /* Thicker pure black border */
-    border-radius: 15px; /* Rounded corners */
+    border: 2px solid black;
+    border-radius: 15px;
     background-color: #F7DE88;
 }
 
 /* Add border to buttons */
 .btn {
-    border: 2px solid white; /* Add a border to the button */
-    border-radius: 10px; /* Rounded corners for buttons */
+    border: 2px solid white;
+    border-radius: 10px;
 }
 
 /* Styling to allow vertical centering in the Dashboard */
@@ -62,7 +62,7 @@ html, body {
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
 }
 
 .text-center, .custom-panel-wrapper {
@@ -74,7 +74,58 @@ html, body {
     /* This makes the div take up remaining space and centers it vertically */
     flex-grow: 1; /* It will grow to fill the remaining space */
     display: flex;
-    justify-content: center; /* Horizontally center content */
-    align-items: center; /* Vertically center content */
-    /* padding: 20px; */ /* Optional: Add padding to prevent content from sticking to edges */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Event log styling */
+
+.event-log {
+    width: 100%;
+    height: 100px;
+    padding: 0px 8px;
+    border: 2px solid #000;
+    overflow-y: auto; /* Enable vertical scrolling */
+    white-space: pre-wrap; /* Ensure line breaks are preserved */
+    text-align: left;
+    background-color: #f4f4f4;
+    color: #000;
+}
+
+/* Buzzlings table styling */
+
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid #000;
+    background-color: #fff;
+}
+
+.fixed-table {
+    width: 100%;
+    background-color: #212529;
+    text-align: center;
+    font-size: 14px;
+}
+
+.fixed-table th {
+    padding: 5px 10px;
+    color: #fff;
+    background-color: #212529;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.fixed-table td {
+    padding: 5px 10px;
+}
+
+.fixed-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.fixed-table tr:nth-child(odd) {
+    background-color: #ffffff;
 }

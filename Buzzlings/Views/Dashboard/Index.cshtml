@@ -28,7 +28,81 @@
     <div class="vertical-center">
         @if (Model.User?.HiveId is not null)
         {
-            <p>AYYY LMAO</p>
+            <div class="text-center">
+                <div class="custom-panel-wrapper mt-2" style="max-width: 500px; width: 100%; margin: auto;">
+                    <div class="card custom-panel" style="width: 100%;">
+                        <div class="card-body p-1">
+                            <b>🍯 @Model.User?.Hive?.Name 🍯</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+                    <div class="card custom-panel" style="width: 100%;">
+                        <div class="card-body p-1">
+                            <b>add hive status...</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+                    <div class="card custom-panel" style="width: 100%;">
+                        <div class="card-body p-2">
+                            <div id="eventLog" class="event-log" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-panel-wrapper mt-2" style="max-width: 500px; width: 100%; margin: auto;">
+                    <div class="card custom-panel" style="width: 100%;">
+                        <div class="card-body p-2">
+                            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search..." style="border-radius: 0; border: 2px solid black;" />
+                            <div class="table-container">
+                                <table class="fixed-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Role</th>
+                                            <th>Mood</th>
+                                            <th>Edit</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Testadfghjkloiuytrew</td>
+                                            <td>Role</td>
+                                            <td>😡</td>
+                                            <td>
+                                                <button class="tablebutton" onclick="editBuzzling(0)">🖊️</button>
+                                            </td>
+                                            <td>
+                                                <button class="tablebutton" onclick="deleteBuzzling(0)">❌</button>
+                                            </td>
+                                        </tr>
+                                        @{
+                                            if (Model.User?.Hive?.Buzzlings is not null)
+                                            {
+                                                @foreach (Buzzlings.Data.Models.Buzzling buzzling in Model.User.Hive.Buzzlings)
+                                                {
+                                                    <tr>
+                                                        <td>@buzzling.Name</td>
+                                                        <td>@buzzling.Role?.Name ?? "N/A"</td>
+                                                        <td>@buzzling.Mood ?? "-"</td>
+                                                        <td>
+                                                            <button class="tablebutton" onclick="editBuzzling(@buzzling.Id)">🖊️</button> <!-- Pen Icon -->
+                                                        </td>
+                                                        <td>
+                                                            <button class="tablebutton" onclick="deleteBuzzling(@buzzling.Id)">❌</button> <!-- Red X Icon -->
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
         else
         {
@@ -62,3 +136,42 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function addEventLog(message) {
+            var logContainer = document.getElementById("eventLog");
+
+            // Create a new log entry element
+            var logEntry = document.createElement("div");
+            logEntry.innerHTML = message; // Assuming the message can contain HTML for rich text
+
+            // Append to the log container
+            logContainer.appendChild(logEntry);
+
+            // Scroll to the bottom (for auto-scrolling)
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function fetchLatestLogs() {
+            $.ajax({
+                url: '/Dashboard/GetEventLogs',
+                type: 'GET',
+                success: function(data) {
+                    if (data && data.logs) {
+                        data.logs.forEach(logMessage => {
+                            addEventLog(logMessage);  // Append each log message to the container
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching logs: ", error);
+                }
+            });
+        }
+
+        fetchLatestLogs();
+
+        setInterval(fetchLatestLogs, 5000);
+    </script>
+}
