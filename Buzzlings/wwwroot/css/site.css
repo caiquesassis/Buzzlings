@@ -89,19 +89,17 @@ html, body {
     gap: 20px;
 }
 
-/* Event log container (left side) */
-.event-log-container {
-    width: 50%;
+/* Left side container (event log + additional elements) */
+.left-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    width: 50%; /* Left container width */
+    height: auto; /* Allow vertical expansion */
 }
 
 /* Buzzlings table container (right side) */
 .buzzlings-table-container {
     width: 50%;
-}
-
-/* Container below the event log for more elements */
-.additional-elements-container {
-    margin-top: 20px;
 }
 
 /* Event log styling ============================================ */

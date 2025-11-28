@@ -45,10 +45,19 @@
             <!-- Flex container for event log and buzzlings table -->
             <div class="flex-container">
                 <!-- Event Log (left side) -->
-                <div class="custom-panel-wrapper mt-2 event-log-container">
-                    <div class="card custom-panel" style="width: 100%;">
-                        <div class="card-body p-2">
-                            <div id="eventLog" class="event-log" aria-live="polite"></div>
+                <div class="left-container">
+                    <div class="custom-panel-wrapper mt-2">
+                        <div class="card custom-panel" style="width: 100%;">
+                            <div class="card-body p-2">
+                                <div id="eventLog" class="event-log" aria-live="polite"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="custom-panel-wrapper mt-2">
+                        <div class="card custom-panel" style="width: 100%;">
+                            <div class="card-body p-1">
+                                <b>Create buzzling</b>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,7 +81,7 @@
                                         <tr>
                                             <td>Testadfghjkloiuytrew</td>
                                             <td>Role</td>
-                                            <td>😡</td>
+                                            <td style="font-size:28px;">😡</td>
                                             <td>
                                                 <button class="tablebutton" onclick="editBuzzling(0)">🖊️</button>
                                             </td>
@@ -88,7 +97,7 @@
                                                     <tr>
                                                         <td>@buzzling.Name</td>
                                                         <td>@buzzling.Role?.Name ?? "N/A"</td>
-                                                        <td>@buzzling.Mood ?? "-"</td>
+                                                        <td style="font-size:28px;">@buzzling.Mood ?? "-"</td>
                                                         <td>
                                                             <button class="tablebutton" onclick="editBuzzling(@buzzling.Id)">🖊️</button>
                                                         </td>
