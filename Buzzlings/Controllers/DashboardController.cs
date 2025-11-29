@@ -47,6 +47,14 @@ namespace Buzzlings.Web.Controllers
                 }
             }
 
+            if (dashboardVM.IgnoreBuzzlingNameValidation)
+            {
+                if (ModelState.ContainsKey("BuzzlingName"))
+                {
+                    ModelState["BuzzlingName"]?.Errors.Clear();
+                }
+            }
+
             return View(dashboardVM);
         }
 
@@ -55,6 +63,9 @@ namespace Buzzlings.Web.Controllers
         public async Task<IActionResult> CreateHive(DashboardViewModel dashboardVM)
         {
             dashboardVM.IgnoreHiveNameValidation = false;
+            dashboardVM.IgnoreBuzzlingNameValidation = true;
+
+            ModelState.Remove("BuzzlingName");
 
             if (ModelState.IsValid)
             {
