@@ -1,4 +1,5 @@
-﻿using Buzzlings.BusinessLogic.Services.Hive;
+﻿using Buzzlings.BusinessLogic.Services.Buzzling;
+using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.User;
 using Buzzlings.Data.Models;
 using Buzzlings.Data.Repositories.Interfaces;
@@ -6,6 +7,7 @@ using Buzzlings.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Buzzlings.Web.Controllers
 {
@@ -14,13 +16,19 @@ namespace Buzzlings.Web.Controllers
     {
         private readonly IUserService _userService;
         private readonly IHiveService _hiveService;
+        private readonly IBuzzlingService _buzzlingService;
         private readonly SignInManager<User> _signInManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DashboardController(IUserService userService, IHiveService hiveService, SignInManager<User> signInManager)
+        public DashboardController(IUserService userService,
+            IHiveService hiveService, IBuzzlingService buzzlingService,
+            SignInManager<User> signInManager, IUnitOfWork unitOfWork)
         {
             _userService = userService;
             _hiveService = hiveService;
+            _buzzlingService = buzzlingService;
             _signInManager = signInManager;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index(DashboardViewModel dashboardVM)
@@ -55,6 +63,15 @@ namespace Buzzlings.Web.Controllers
                 }
             }
 
+            List<SelectListItem> rolesSelectList = new List<SelectListItem>();
+
+            foreach (BuzzlingRole role in await _unitOfWork.BuzzlingRoleRepository.GetAll())
+            {
+                rolesSelectList.Add(new SelectListItem(role.Name, role.Id.ToString()));
+            }
+
+            ViewData["rolesSelectList"] = rolesSelectList;
+
             return View(dashboardVM);
         }
 
@@ -78,6 +95,39 @@ namespace Buzzlings.Web.Controllers
                 dashboardVM.User.Hive = hive;
 
                 await _userService.Update(dashboardVM.User);
+            }
+
+            return RedirectToAction("Index", "Dashboard", dashboardVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBuzzling(DashboardViewModel dashboardVM)
+        {
+            dashboardVM.IgnoreHiveNameValidation = true;
+            dashboardVM.IgnoreBuzzlingNameValidation = false;
+
+            ModelState.Remove("HiveName");
+
+            if (ModelState.IsValid)
+            {
+                Buzzling buzzling = new Buzzling 
+                { 
+                    Name = dashboardVM.BuzzlingName,
+                    Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!))
+                };
+
+                await _buzzlingService.Create(buzzling);
+
+                dashboardVM.User = await _userService.GetUser(User);
+
+                dashboardVM.User.Hive = await _hiveService.GetById(dashboardVM.User.HiveId!.Value);
+
+                dashboardVM.User.Hive?.Buzzlings?.Add(buzzling);
+
+                await _hiveService.Update(dashboardVM.User?.Hive!);
+
+                await _userService.Update(dashboardVM.User!);
             }
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);

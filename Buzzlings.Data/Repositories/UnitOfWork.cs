@@ -9,12 +9,14 @@ namespace Buzzlings.Data.Repositories
 
         public IHiveRepository HiveRepository { get; private set; }
         public IBuzzlingRepository BuzzlingRepository { get; private set; }
+        public IBuzzlingRoleRepository BuzzlingRoleRepository { get; private set; }
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
             HiveRepository = new HiveRepository(_dbContext);
             BuzzlingRepository = new BuzzlingRepository(_dbContext);
+            BuzzlingRoleRepository = new BuzzlingRoleRepository(_dbContext);
         }
 
         public async Task Save()

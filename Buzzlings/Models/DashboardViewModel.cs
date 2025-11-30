@@ -17,8 +17,8 @@ namespace Buzzlings.Web.Models
         [Required(ErrorMessage = "Buzzling name is required.")]
         [NotWhitespace(ErrorMessage = "Buzzling name cannot contain only whitespace.")]
         public string? BuzzlingName { get; set; }
-        public BuzzlingRole? BuzzlingRole { get; set; }
+        public string? BuzzlingRole { get; set; }
         public bool IgnoreHiveNameValidation { get; set; } = true;
-        public bool IgnoreBuzzlingNameValidation { get; set; } = false;
+        public bool IgnoreBuzzlingNameValidation { get; set; } = true;
     }
 }

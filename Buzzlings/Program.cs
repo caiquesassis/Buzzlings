@@ -30,6 +30,7 @@ builder.Services.AddDefaultIdentity<User>(options =>
 
 builder.Services.AddScoped<IHiveRepository, HiveRepository>();
 builder.Services.AddScoped<IBuzzlingRepository, BuzzlingRepository>();
+builder.Services.AddScoped<IBuzzlingRoleRepository, BuzzlingRoleRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

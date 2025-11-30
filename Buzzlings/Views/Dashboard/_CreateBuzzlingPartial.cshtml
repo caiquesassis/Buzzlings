@@ -1,4 +1,8 @@
-﻿@model DashboardViewModel
+﻿@{
+    List<SelectListItem>? rolesSelectList = ViewData["RolesSelectList"] as List<SelectListItem>;
+}
+
+@model DashboardViewModel
 
 <div class="custom-panel-wrapper mt-2">
     <div class="card custom-panel" style="width: 100%;">
@@ -12,7 +16,6 @@
         <div class="card-body p-3">
             <form method="post" asp-controller="Dashboard" asp-action="CreateBuzzling">
                 @Html.AntiForgeryToken() <!-- CSRF protection -->
-
                 <div class="mb-3 d-flex justify-content-between">
                     <div style="width: 48%;">
                         <label asp-for="BuzzlingName" class="form-label"><b>Name</b></label>
@@ -21,10 +24,11 @@
                     </div>
                     <div style="width: 48%;">
                         <label asp-for="BuzzlingRole" class="form-label"><b>Role</b></label>
-                        <select id="buzzlingRole" class="form-control">
-                            <option value="role1">Role 1</option>
-                            <option value="role2">Role 2</option>
-                            <option value="role3">Role 3</option>
+                        <select asp-for="BuzzlingRole" class="form-select">
+                            @foreach (var role in rolesSelectList)
+                            {
+                                <option value="@role.Value">@role.Text</option>
+                            }
                         </select>
                     </div>
                 </div>
