@@ -13,5 +13,9 @@ namespace Buzzlings.Data.Models
         public BuzzlingRole? Role { get; set; }
         public int? Mood { get; set; }
         public ICollection<Buzzling>? RivalBuzzlings;
+        public int? HiveId { get; set; }
+
+        [ForeignKey("HiveId")]
+        public Hive? Hive { get; set; }
     }
 }

@@ -152,15 +152,10 @@ namespace Buzzlings.Web.Controllers
             {
                 if (user.HiveId is not null)
                 {
-                    Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+                    Hive hive = await _hiveService.Get(h => h.Id == user.HiveId, "Buzzlings");
 
                     if (hive is not null)
                     {
-                        if (hive.Buzzlings is not null)
-                        {
-                            await _buzzlingService.DeleteRange(hive.Buzzlings);
-                        }
-
                         await _hiveService.Delete(hive);
                     }
                 }
@@ -251,11 +246,6 @@ namespace Buzzlings.Web.Controllers
 
                     if (hive is not null)
                     {
-                        if (hive.Buzzlings is not null)
-                        {
-                            await _buzzlingService.DeleteRange(hive.Buzzlings);
-                        }
-
                         await _hiveService.Delete(hive);
 
                         return RedirectToAction("DeleteHiveSuccess", "Account");

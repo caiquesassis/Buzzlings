@@ -17,13 +17,19 @@ namespace Buzzlings.Data.Contexts
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<BuzzlingRole>().HasData(
-            new { Id = 1, Name = "Worker" },
-            new { Id = 2, Name = "Guard" },
-            new { Id = 3, Name = "Forager"},
-            new { Id = 4, Name = "Drone"},
-            new { Id = 5, Name = "Nurse"},
-            new { Id = 6, Name = "Attendant"}
+                new { Id = 1, Name = "Worker" },
+                new { Id = 2, Name = "Guard" },
+                new { Id = 3, Name = "Forager"},
+                new { Id = 4, Name = "Drone"},
+                new { Id = 5, Name = "Nurse"},
+                new { Id = 6, Name = "Attendant"}
             );
+
+            modelBuilder.Entity<Buzzling>()
+                .HasOne(b => b.Hive)
+                .WithMany(h => h.Buzzlings)
+                .HasForeignKey(b => b.HiveId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
     }
