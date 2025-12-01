@@ -44,7 +44,7 @@ namespace Buzzlings.Web.Controllers
 
             if (dashboardVM.User.HiveId.HasValue)
             {
-                dashboardVM.User.Hive = await _hiveService.GetById(dashboardVM.User.HiveId.Value);
+                dashboardVM.User.Hive = await _hiveService.Get(h => h.Id == dashboardVM.User.HiveId, "Buzzlings");
             }
 
             if (dashboardVM.IgnoreHiveNameValidation)
@@ -121,7 +121,7 @@ namespace Buzzlings.Web.Controllers
 
                 dashboardVM.User = await _userService.GetUser(User);
 
-                dashboardVM.User.Hive = await _hiveService.GetById(dashboardVM.User.HiveId!.Value);
+                dashboardVM.User.Hive = await _hiveService.Get(h => h.Id == dashboardVM.User.HiveId, "Buzzlings");
 
                 dashboardVM.User.Hive?.Buzzlings?.Add(buzzling);
 
@@ -144,7 +144,7 @@ namespace Buzzlings.Web.Controllers
 
             if (user.HiveId.HasValue)
             {
-                Hive hive = await _hiveService.GetById(user.HiveId.Value);
+                Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
 
                 if (hive.EventLog is null)
                 {

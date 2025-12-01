@@ -152,8 +152,8 @@ namespace Buzzlings.Web.Controllers
             {
                 if (user.HiveId is not null)
                 {
-                    Hive hive = await _hiveService.GetById(user.HiveId.Value);
-                    
+                    Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+
                     if (hive is not null)
                     {
                         if (hive.Buzzlings is not null)
@@ -210,7 +210,7 @@ namespace Buzzlings.Web.Controllers
                 {
                     if (user.HiveId is not null)
                     {
-                        Hive hive = await _hiveService.GetById(user.HiveId.Value);
+                        Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
 
                         hive.Name = updateHiveNameVM.HiveName;
 
@@ -247,7 +247,7 @@ namespace Buzzlings.Web.Controllers
             {
                 if (user.HiveId is not null)
                 {
-                    Hive hive = await _hiveService.GetById(user.HiveId.Value);
+                    Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
 
                     if (hive is not null)
                     {

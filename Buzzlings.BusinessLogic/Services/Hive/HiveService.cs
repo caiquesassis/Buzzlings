@@ -1,4 +1,5 @@
 ﻿using Buzzlings.Data.Repositories.Interfaces;
+using System.Linq.Expressions;
 
 namespace Buzzlings.BusinessLogic.Services.Hive
 {
@@ -22,9 +23,14 @@ namespace Buzzlings.BusinessLogic.Services.Hive
             return await _unitOfWork.HiveRepository.GetAll();
         }
 
+        public async Task<Data.Models.Hive> Get(Expression<Func<Data.Models.Hive, bool>> filter, string? includeProperties = null)
+        {
+            return await _unitOfWork.HiveRepository.Get(filter, includeProperties);
+        }
+
         public async Task<Data.Models.Hive> GetById(int id)
         {
-            return await _unitOfWork.HiveRepository.Get(u => u.Id == id);
+            return await _unitOfWork.HiveRepository.Get(h => h.Id == id);
         }
 
         public async Task Update(Data.Models.Hive hive)
