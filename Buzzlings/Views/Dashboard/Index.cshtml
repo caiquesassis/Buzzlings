@@ -72,17 +72,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Testadfghjkloiuytrew</td>
-                                            <td>Role</td>
-                                            <td style="font-size:28px;">😡</td>
-                                            <td>
-                                                <button class="tablebutton" onclick="editBuzzling(0)">🖊️</button>
-                                            </td>
-                                            <td>
-                                                <button class="tablebutton" onclick="deleteBuzzling(0)">❌</button>
-                                            </td>
-                                        </tr>
                                         @{
                                             if (Model.User?.Hive?.Buzzlings is not null)
                                             {
@@ -90,8 +79,8 @@
                                                 {
                                                     <tr>
                                                         <td>@buzzling.Name</td>
-                                                        <td>@buzzling.Role?.Name ?? "N/A"</td>
-                                                        <td style="font-size:28px;">@buzzling.Mood ?? "-"</td>
+                                                        <td>@buzzling.Role?.Name</td>
+                                                        <td style="font-size:28px;">@buzzling.Mood</td>
                                                         <td>
                                                             <button class="tablebutton" onclick="editBuzzling(@buzzling.Id)">🖊️</button>
                                                         </td>

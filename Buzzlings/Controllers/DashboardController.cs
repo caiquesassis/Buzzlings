@@ -128,6 +128,11 @@ namespace Buzzlings.Web.Controllers
                 await _hiveService.Update(dashboardVM.User?.Hive!);
 
                 await _userService.Update(dashboardVM.User!);
+
+                dashboardVM.BuzzlingName = String.Empty;
+                dashboardVM.BuzzlingRole = "0";
+
+                dashboardVM.IgnoreBuzzlingNameValidation = true;
             }
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);
