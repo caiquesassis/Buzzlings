@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
 
 namespace Buzzlings.Web.Controllers
 {
@@ -63,12 +64,7 @@ namespace Buzzlings.Web.Controllers
                 }
             }
 
-            List<SelectListItem> rolesSelectList = new List<SelectListItem>();
-
-            foreach (BuzzlingRole role in await _unitOfWork.BuzzlingRoleRepository.GetAll())
-            {
-                rolesSelectList.Add(new SelectListItem(role.Name, role.Id.ToString()));
-            }
+            SelectList rolesSelectList = new SelectList(await _unitOfWork.BuzzlingRoleRepository.GetAll(), "Id", "Name");
 
             ViewData["rolesSelectList"] = rolesSelectList;
 
@@ -111,8 +107,8 @@ namespace Buzzlings.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                Buzzling buzzling = new Buzzling 
-                { 
+                Buzzling buzzling = new Buzzling
+                {
                     Name = dashboardVM.BuzzlingName,
                     Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!))
                 };
@@ -134,6 +130,67 @@ namespace Buzzlings.Web.Controllers
 
                 dashboardVM.IgnoreBuzzlingNameValidation = true;
             }
+
+            return RedirectToAction("Index", "Dashboard", dashboardVM);
+        }
+
+
+        public async Task<IActionResult> UpdateBuzzling(int id)
+        {
+            Buzzling buzzling = await _buzzlingService.GetById(id);
+
+            DashboardViewModel dashboardVM = new DashboardViewModel
+            {
+                BuzzlingName = buzzling.Name,
+                BuzzlingRole = buzzling.RoleId.ToString(),
+                BuzzlingId = buzzling.Id,
+                IsUpdateAttempt = true
+            };
+
+            return RedirectToAction("Index", "Dashboard", dashboardVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateBuzzling(DashboardViewModel dashboardVM)
+        {
+            dashboardVM.IgnoreHiveNameValidation = true;
+            dashboardVM.IgnoreBuzzlingNameValidation = false;
+
+            ModelState.Remove("HiveName");
+
+            Buzzling buzzling = await _buzzlingService.GetById(dashboardVM.BuzzlingId!.Value);
+
+            if (ModelState.IsValid)
+            {
+                buzzling.Name = dashboardVM.BuzzlingName;
+                buzzling.Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!));
+
+                await _buzzlingService.Update(buzzling);
+
+                dashboardVM.BuzzlingName = String.Empty;
+                dashboardVM.BuzzlingRole = "0";
+
+                dashboardVM.IgnoreBuzzlingNameValidation = true;
+            }
+            else
+            {
+                dashboardVM.IsUpdateAttempt = true;
+            }
+
+            return RedirectToAction("Index", "Dashboard", dashboardVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBuzzling(DashboardViewModel dashboardVM, int id)
+        {
+            dashboardVM.IgnoreHiveNameValidation = true;
+            dashboardVM.IgnoreBuzzlingNameValidation = true;
+
+            Buzzling buzzling = await _buzzlingService.GetById(id);
+
+            await _buzzlingService.Delete(buzzling);
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);
         }

@@ -53,7 +53,14 @@
                             </div>
                         </div>
                     </div>
-                    <partial name="_CreateBuzzlingPartial" />
+                    @if (Model.IsUpdateAttempt is false) //string.IsNullOrEmpty(Model.BuzzlingName)
+                    {
+                        <partial name="_CreateBuzzlingPartial" />
+                    }
+                    else
+                    {
+                        <partial name="_UpdateBuzzlingPartial" />
+                    }
                 </div>
                 <!-- Buzzlings Table (right side) -->
                 <div class="custom-panel-wrapper mt-2 buzzlings-table-container">
@@ -67,7 +74,7 @@
                                             <th>Name</th>
                                             <th>Role</th>
                                             <th>Mood</th>
-                                            <th>Edit</th>
+                                            <th>Update</th>
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
@@ -82,10 +89,16 @@
                                                         <td>@buzzling.Role?.Name</td>
                                                         <td style="font-size:28px;">@buzzling.Mood</td>
                                                         <td>
-                                                            <button class="tablebutton" onclick="editBuzzling(@buzzling.Id)">🖊️</button>
+                                                            <form asp-controller="Dashboard" asp-action="UpdateBuzzling" method="get">
+                                                                <input type="hidden" name="id" value="@buzzling.Id" />
+                                                                <button type="submit" class="tablebutton">🖊️</button>
+                                                            </form>
                                                         </td>
                                                         <td>
-                                                            <button class="tablebutton" onclick="deleteBuzzling(@buzzling.Id)">❌</button>
+                                                            <form asp-controller="Dashboard" asp-action="DeleteBuzzling" method="post">
+                                                                <input type="hidden" name="id" value="@buzzling.Id" />
+                                                                <button type="submit" class="tablebutton">❌</button>
+                                                            </form>
                                                         </td>
                                                     </tr>
                                                 }
