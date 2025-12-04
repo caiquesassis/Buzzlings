@@ -1,0 +1,37 @@
+﻿@model ICollection<Buzzlings.Data.Models.Buzzling>
+
+<table class="fixed-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Mood</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach(Buzzlings.Data.Models.Buzzling buzzling in Model)
+            {
+                <tr>
+                    <td>@buzzling.Name</td>
+                    <td>@buzzling.Role?.Name</td>
+                    <td style="font-size:28px;">@buzzling.Mood</td>
+                    <td>
+                        <form asp-controller="Dashboard" asp-action="UpdateBuzzling" method="get">
+                            <input type="hidden" name="id" value="@buzzling.Id" />
+                            <button type="submit" class="tablebutton">🖊️</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-controller="Dashboard" asp-action="DeleteBuzzling" method="post">
+                            <input type="hidden" name="id" value="@buzzling.Id" />
+                            <button type="submit" class="tablebutton">❌</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

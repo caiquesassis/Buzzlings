@@ -110,7 +110,8 @@ namespace Buzzlings.Web.Controllers
                 Buzzling buzzling = new Buzzling
                 {
                     Name = dashboardVM.BuzzlingName,
-                    Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!))
+                    Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!)),
+                    Mood = 100
                 };
 
                 await _buzzlingService.Create(buzzling);
@@ -221,6 +222,29 @@ namespace Buzzlings.Web.Controllers
             }
 
             return Json(new { logs = new List<string>() });
+        }
+
+        public async Task<IActionResult> FilterBuzzlings(string query)
+        {
+            List<Buzzling> buzzlings = new List<Buzzling>();
+
+            User user = await _userService.GetUser(User);
+
+            if (user.HiveId.HasValue)
+            {
+                Hive hive = await _hiveService.GetWithBuzzlingsAndRoles(h => h.Id == user.HiveId);
+
+                if (hive.Buzzlings is not null)
+                {
+                    buzzlings = hive.Buzzlings.Where(b =>
+                        string.IsNullOrEmpty(query) || //If the query is empty, return full list
+                        string.IsNullOrWhiteSpace(query) ||
+                        b.Name!.Contains(query, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+            }
+
+            return PartialView("_BuzzlingsTablePartial", buzzlings);
         }
 
         public async Task<IActionResult> LogOut()

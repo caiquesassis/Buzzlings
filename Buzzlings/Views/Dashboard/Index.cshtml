@@ -53,7 +53,7 @@
                             </div>
                         </div>
                     </div>
-                    @if (Model.IsUpdateAttempt is false) //string.IsNullOrEmpty(Model.BuzzlingName)
+                    @if (Model.IsUpdateAttempt is false)
                     {
                         <partial name="_CreateBuzzlingPartial" />
                     }
@@ -66,46 +66,9 @@
                 <div class="custom-panel-wrapper mt-2 buzzlings-table-container">
                     <div class="card custom-panel" style="width: 100%;">
                         <div class="card-body p-2">
-                            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search buzzling name..." style="border-radius: 0; border: 2px solid black;" />
-                            <div class="table-container">
-                                <table class="fixed-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Role</th>
-                                            <th>Mood</th>
-                                            <th>Update</th>
-                                            <th>Delete</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @{
-                                            if (Model.User?.Hive?.Buzzlings is not null)
-                                            {
-                                                @foreach (Buzzlings.Data.Models.Buzzling buzzling in Model.User.Hive.Buzzlings)
-                                                {
-                                                    <tr>
-                                                        <td>@buzzling.Name</td>
-                                                        <td>@buzzling.Role?.Name</td>
-                                                        <td style="font-size:28px;">@buzzling.Mood</td>
-                                                        <td>
-                                                            <form asp-controller="Dashboard" asp-action="UpdateBuzzling" method="get">
-                                                                <input type="hidden" name="id" value="@buzzling.Id" />
-                                                                <button type="submit" class="tablebutton">🖊️</button>
-                                                            </form>
-                                                        </td>
-                                                        <td>
-                                                            <form asp-controller="Dashboard" asp-action="DeleteBuzzling" method="post">
-                                                                <input type="hidden" name="id" value="@buzzling.Id" />
-                                                                <button type="submit" class="tablebutton">❌</button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            }
-                                        }
-                                    </tbody>
-                                </table>
+                            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search buzzling by name..." style="border-radius: 0; border: 2px solid black;" />
+                            <div id="buzzlingsTable" class="table-container">
+                                @await Html.PartialAsync("_BuzzlingsTablePartial", Model.User!.Hive?.Buzzlings)
                             </div>
                         </div>
                     </div>
@@ -152,11 +115,9 @@
         function addEventLog(message) {
             var logContainer = document.getElementById("eventLog");
 
-            // Create a new log entry element
             var logEntry = document.createElement("div");
             logEntry.innerHTML = message; // Assuming the message can contain HTML for rich text
 
-            // Append to the log container
             logContainer.appendChild(logEntry);
 
             // Scroll to the bottom (for auto-scrolling)
@@ -165,12 +126,12 @@
 
         function fetchLatestLogs() {
             $.ajax({
-                url: '/Dashboard/GetEventLogs',
-                type: 'GET',
+                url: "@Url.Action("GetEventLogs", "Dashboard")",
+                type: "GET",
                 success: function(data) {
                     if (data && data.logs) {
                         data.logs.forEach(logMessage => {
-                            addEventLog(logMessage);  // Append each log message to the container
+                            addEventLog(logMessage);
                         });
                     }
                 },
@@ -180,8 +141,26 @@
             });
         }
 
-        fetchLatestLogs();
+        function filterBuzzlingsTable(){
+            document.getElementById("searchInput").addEventListener("input", function () {
+                var searchTerm = this.value;
 
-        setInterval(fetchLatestLogs, 5000);
+                $.ajax({
+                    url: "@Url.Action("FilterBuzzlings", "Dashboard")",
+                    type: "GET",
+                    data: { query: searchTerm },
+                    success: function (data) {
+                        document.getElementById("buzzlingsTable").innerHTML = data;
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            fetchLatestLogs();
+            filterBuzzlingsTable();
+            setInterval(fetchLatestLogs, 5000);
+        });
+
     </script>
 }

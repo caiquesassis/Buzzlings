@@ -28,6 +28,11 @@ namespace Buzzlings.BusinessLogic.Services.Hive
             return await _unitOfWork.HiveRepository.Get(filter, includeProperties);
         }
 
+        public async Task<Data.Models.Hive> GetWithBuzzlingsAndRoles(Expression<Func<Data.Models.Hive, bool>> filter)
+        {
+            return await _unitOfWork.HiveRepository.GetWithBuzzlingsAndRoles(filter);
+        }
+
         public async Task<Data.Models.Hive> GetById(int id)
         {
             return await _unitOfWork.HiveRepository.Get(h => h.Id == id);
