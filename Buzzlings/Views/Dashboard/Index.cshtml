@@ -112,6 +112,8 @@
 
 @section Scripts {
     <script>
+        let lastLogIndex = 0;
+
         function addEventLog(message) {
             var logContainer = document.getElementById("eventLog");
 
@@ -126,14 +128,17 @@
 
         function fetchLatestLogs() {
             $.ajax({
-                url: "@Url.Action("GetEventLogs", "Dashboard")",
+                url: "@Url.Action("GetEventLog", "Dashboard")",
                 type: "GET",
+                data: { lastLogIndex: lastLogIndex },  // Send the index of the last log entry
                 success: function(data) {
-                    if (data && data.logs) {
-                        data.logs.forEach(logMessage => {
+                    if (data && data.log && data.log.length > 0) {
+                        data.log.forEach(logMessage => {
                             addEventLog(logMessage);
                         });
                     }
+
+                    lastLogIndex = data.lastLogIndex;
                 },
                 error: function(xhr, status, error) {
                     console.error("Error fetching logs: ", error);

@@ -201,7 +201,7 @@ namespace Buzzlings.Web.Controllers
 
         }
 
-        public async Task<IActionResult> GetEventLogs()
+        public async Task<IActionResult> GetEventLog(int lastLogIndex = 0)
         {
             User user = await _userService.GetUser(User);
 
@@ -218,10 +218,14 @@ namespace Buzzlings.Web.Controllers
                     await _hiveService.Update(hive);
                 }
 
-                return Json(new { logs = hive.EventLog });
+                List<string>? newLogs = hive.EventLog?.Skip(lastLogIndex).ToList();
+
+                int updatedLogIndex = hive.EventLog!.Count;
+
+                return Json(new { log = newLogs, lastLogIndex = updatedLogIndex });
             }
 
-            return Json(new { logs = new List<string>() });
+            return Json(new { log = new List<string>() });
         }
 
         public async Task<IActionResult> FilterBuzzlings(string query)
