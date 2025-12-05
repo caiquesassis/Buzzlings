@@ -32,13 +32,17 @@
                 <div class="card custom-panel" style="width: 100%;">
                     <div class="card-body p-1">
                         <b>🍯 @Model.User?.Hive?.Name 🍯</b>
-                    </div>
-                </div>
-            </div>
-            <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-                <div class="card custom-panel" style="width: 100%;">
-                    <div class="card-body p-1">
-                        <b>add hive status...</b>
+                        <br />
+                        <b>Age: @Model.User?.Hive?.Age</b>
+                        @if (Model.User?.Hive?.Age != 1)
+                        {
+                            <b> years old | </b>
+                        }
+                        else
+                        {
+                            <b> year old | </b>
+                        }
+                        <b>Happiness: @Model.User?.Hive?.Happiness%</b>
                     </div>
                 </div>
             </div>

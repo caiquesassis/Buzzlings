@@ -213,7 +213,7 @@ namespace Buzzlings.Web.Controllers
                 {
                     hive.EventLog = new List<string>();
 
-                    hive.EventLog?.Add(hive.Name + " is born!");
+                    hive.EventLog?.Add("🍯 " + hive.Name + " 🍯 is born!");
 
                     await _hiveService.Update(hive);
                 }
