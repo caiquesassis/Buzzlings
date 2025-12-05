@@ -9,6 +9,8 @@ namespace Buzzlings.Data.Models
         [Required]
         public string? Name { get; set; }
         public int? Age { get; set; }
+        [Range(0, 100)]
+        public int? Happiness { get; set; }
         public ICollection<Buzzling>? Buzzlings { get; set; }
         public ICollection<string>? EventLog { get; set; }
     }
