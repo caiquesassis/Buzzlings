@@ -8,9 +8,9 @@ namespace Buzzlings.Data.Models
         [StringLength(20, MinimumLength = 3)]
         [Required]
         public string? Name { get; set; }
-        public int? Age { get; set; }
+        public int? Age { get; set; } = 0;
         [Range(0, 100)]
-        public int? Happiness { get; set; }
+        public int? Happiness { get; set; } = 100;
         public ICollection<Buzzling>? Buzzlings { get; set; }
         public ICollection<string>? EventLog { get; set; }
     }
