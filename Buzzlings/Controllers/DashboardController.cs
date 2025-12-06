@@ -196,9 +196,57 @@ namespace Buzzlings.Web.Controllers
             return RedirectToAction("Index", "Dashboard", dashboardVM);
         }
 
-        public async Task UpdateSimulationState()
+        public async Task UpdateSimulation()
         {
+            //+1 year = 10 seconds
+            //Simulation update
+                //Below 6 years: 4 seconds
+                //6 - 10 years: 3 seconds
+                //10+ years: 2 seconds
 
+            //Add emojis to messages to make it easier to read
+            //Bees for buzzlings, role-specific ones, disaster-specific ones...etc
+
+            //BuzzlingCreationMotivatorEvent (text-only, no real impact)
+            //AdverseHiveEvent (affects overall mood, may kill buzzlings)
+                //WeatherEvent (storm, heat wave, cold front) - say that need more workers maybe
+                //HiveAttackEvent (wasps, ants, curious kids) - say that needs more guards maybe
+                //DiseaseOutbreakEvent - say that needs more nurses maybe
+                //NectarShortageEvent - say that needs more foragers maybe
+                //QueenUnhappyEvent - say that needs more drones and attendants maybe
+
+            //SingleBuzzlingEvent
+            //(I need a property in buzzling to track their "current request")
+            //(I may also need a "last changed" property so they ask for it from time to time based on the "year" they were born)
+                //By rivalry
+                    //By role (other)
+                    //By name (other)
+                //By role (own)
+                //By name (own)
+                //By action (mood-dependent)
+                //By mood (may affect others)
+            //DecorationBuzzlingEvent (no impact)
+        }
+
+        public async Task<IActionResult> UpdateHiveAge()
+        {
+            User user = await _userService.GetUser(User);
+
+            if (user.HiveId.HasValue)
+            {
+                Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+
+                if (hive.Happiness > 0)
+                {
+                    hive.Age++;
+                }
+
+                await _hiveService.Update(hive);
+
+                return Json(new { age = hive.Age });
+            }
+
+            return Json(new { age = 0 });
         }
 
         public async Task<IActionResult> GetEventLog(int lastLogIndex = 0)

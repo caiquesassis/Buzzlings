@@ -33,14 +33,14 @@
                     <div class="card-body p-1">
                         <b>🍯 @Model.User?.Hive?.Name 🍯</b>
                         <br />
-                        <b>Age: @Model.User?.Hive?.Age</b>
+                        <b id="hiveAge">Age: @Model.User?.Hive?.Age</b>
                         @if (Model.User?.Hive?.Age != 1)
                         {
-                            <b> years old | </b>
+                            <b> days old | </b>
                         }
                         else
                         {
-                            <b> year old | </b>
+                            <b> day old | </b>
                         }
                         <b>Happiness: @Model.User?.Hive?.Happiness%</b>
                     </div>
@@ -118,6 +118,21 @@
     <script>
         let lastLogIndex = 0;
 
+        function filterBuzzlingsTable(){
+            document.getElementById("searchInput").addEventListener("input", function () {
+                var searchTerm = this.value;
+
+                $.ajax({
+                    url: "@Url.Action("FilterBuzzlings", "Dashboard")",
+                    type: "GET",
+                    data: { query: searchTerm },
+                    success: function (data) {
+                        document.getElementById("buzzlingsTable").innerHTML = data;
+                    }
+                });
+            });
+        }
+
         function addEventLog(message) {
             var logContainer = document.getElementById("eventLog");
 
@@ -150,25 +165,25 @@
             });
         }
 
-        function filterBuzzlingsTable(){
-            document.getElementById("searchInput").addEventListener("input", function () {
-                var searchTerm = this.value;
-
-                $.ajax({
-                    url: "@Url.Action("FilterBuzzlings", "Dashboard")",
-                    type: "GET",
-                    data: { query: searchTerm },
-                    success: function (data) {
-                        document.getElementById("buzzlingsTable").innerHTML = data;
-                    }
-                });
+        function updateHiveAge(){
+            $.ajax({
+                url: "@Url.Action("UpdateHiveAge", "Dashboard")",
+                type: "GET",
+                success: function (data) {
+                    document.getElementById("hiveAge").innerHTML = "Age: " + data.age;
+                }
             });
+        }
+
+        function updateSimulation(){
+
         }
 
         $(document).ready(function() {
             fetchLatestLogs();
             filterBuzzlingsTable();
             setInterval(fetchLatestLogs, 5000);
+            setInterval(updateHiveAge, 10000);
         });
 
     </script>
