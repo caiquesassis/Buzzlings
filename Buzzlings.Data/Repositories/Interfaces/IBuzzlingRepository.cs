@@ -5,5 +5,6 @@ namespace Buzzlings.Data.Repositories.Interfaces
     public interface IBuzzlingRepository : IRepository<Buzzling>
     {
         void Update(Buzzling buzzling);
+        Task BulkUpdate(ICollection<Buzzling> buzzlings);
     }
 }

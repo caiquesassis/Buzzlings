@@ -17,5 +17,10 @@ namespace Buzzlings.Data.Repositories
         {
             _dbContext.Entry(buzzling).CurrentValues.SetValues(buzzling);
         }
+
+        public async Task BulkUpdate(ICollection<Buzzling> buzzlings)
+        {
+            await _dbContext.BulkUpdateAsync(buzzlings);
+        }
     }
 }

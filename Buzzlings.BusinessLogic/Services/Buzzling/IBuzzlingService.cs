@@ -6,6 +6,7 @@
         Task<IEnumerable<Data.Models.Buzzling>> GetAll();
         Task<Data.Models.Buzzling> GetById(int id);
         Task Update(Data.Models.Buzzling buzzling);
+        Task BulkUpdate(ICollection<Data.Models.Buzzling> buzzlings);
         Task Delete(Data.Models.Buzzling buzzling);
 
         Task DeleteRange(ICollection<Data.Models.Buzzling> buzzlings);

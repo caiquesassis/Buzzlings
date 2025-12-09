@@ -33,6 +33,12 @@ namespace Buzzlings.BusinessLogic.Services.Buzzling
             await _unitOfWork.Save();
         }
 
+        public async Task BulkUpdate(ICollection<Data.Models.Buzzling> buzzlings)
+        {
+            await _unitOfWork.BuzzlingRepository.BulkUpdate(buzzlings);
+            await _unitOfWork.Save();
+        }
+
         public async Task Delete(Data.Models.Buzzling buzzling)
         {
             _unitOfWork.BuzzlingRepository.Remove(buzzling);
