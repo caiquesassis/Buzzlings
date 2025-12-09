@@ -18,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<User>(options =>
     {
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789γαΰηκιθννοσσγυαΰα";
+
         options.SignIn.RequireConfirmedAccount = false;
 
         options.Password.RequireDigit = false;
