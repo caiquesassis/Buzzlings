@@ -11,8 +11,8 @@ namespace Buzzlings.Data.Models
         public int? RoleId;
         [ForeignKey("RoleId")]
         public BuzzlingRole? Role { get; set; }
-        public int? Mood { get; set; }
-        public ICollection<Buzzling>? RivalBuzzlings;
+        [Range(0, 100)]
+        public int? Mood { get; set; } = 100;
         public int? HiveId { get; set; }
 
         [ForeignKey("HiveId")]
