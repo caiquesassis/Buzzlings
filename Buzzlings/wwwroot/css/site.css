@@ -94,20 +94,20 @@ html, body {
 .left-container {
     display: flex;
     flex-direction: column; /* Stack elements vertically */
-    width: 50%; /* Left container width */
+    width: 60%; /* Left container width */
     height: auto; /* Allow vertical expansion */
 }
 
 /* Buzzlings table container (right side) */
 .buzzlings-table-container {
-    width: 50%;
+    width: 40%;
 }
 
 /* Event log styling ============================================ */
 
 .event-log {
     width: 100%;
-    height: 100px;
+    height: 150px;
     padding: 0px 8px;
     border: 2px solid #000;
     overflow-y: auto; /* Enable vertical scrolling */
