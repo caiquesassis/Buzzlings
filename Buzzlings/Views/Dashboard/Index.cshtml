@@ -42,7 +42,7 @@
                         {
                             <b> day old | </b>
                         }
-                        <b>Happiness: @Model.User?.Hive?.Happiness%</b>
+                        <b id="hiveHappiness">Happiness: @Model.User?.Hive?.Happiness%</b>
                     </div>
                 </div>
             </div>
@@ -117,8 +117,12 @@
 @section Scripts {
     <script>
         let lastLogIndex = 0;
+        let hiveAge = @Model.User?.Hive?.Age;
+        let happinessIntervalId;
+        const happinessIntervalTimer = 6000;
+        const ageIntervalTimer = 6000;
 
-        function filterBuzzlingsTable(){
+        function filterBuzzlingsTable() {
             document.getElementById("searchInput").addEventListener("input", function () {
                 var searchTerm = this.value;
 
@@ -130,6 +134,19 @@
                         document.getElementById("buzzlingsTable").innerHTML = data;
                     }
                 });
+            });
+        }
+
+        function refreshBuzzlingsTable() {
+            $.ajax({
+                url: "@Url.Action("GetBuzzlingsTablePartial", "Dashboard")",
+                type: "GET",
+                success: function(data) {
+                    //If we have something in the searchbar, do not update the table
+                    if(document.getElementById("searchInput").value.length === 0) {
+                        document.getElementById("buzzlingsTable").innerHTML = data;
+                    }
+                }
             });
         }
 
@@ -165,25 +182,34 @@
             });
         }
 
-        function updateHiveAge(){
+        function updateHiveAge() {
             $.ajax({
                 url: "@Url.Action("UpdateHiveAge", "Dashboard")",
                 type: "GET",
                 success: function (data) {
+                    hiveAge = data.age;
                     document.getElementById("hiveAge").innerHTML = "Age: " + data.age;
                 }
             });
         }
 
-        function updateSimulation(){
-
+        function updateHiveHappiness() {
+            $.ajax({
+                url: "@Url.Action("UpdateHiveHappiness", "Dashboard")",
+                type: "GET",
+                success: function (data) {
+                    fetchLatestLogs();
+                    refreshBuzzlingsTable();
+                    document.getElementById("hiveHappiness").innerHTML = "Happiness: " + data.happiness + "%";
+                }
+            });
         }
 
         $(document).ready(function() {
             fetchLatestLogs();
             filterBuzzlingsTable();
-            setInterval(fetchLatestLogs, 5000);
-            setInterval(updateHiveAge, 10000);
+            setInterval(updateHiveAge, ageIntervalTimer);
+            setInterval(updateHiveHappiness, happinessIntervalTimer);
         });
 
     </script>

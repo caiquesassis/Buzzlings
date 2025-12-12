@@ -1,6 +1,11 @@
-﻿using Buzzlings.BusinessLogic.Services.Buzzling;
+﻿using Buzzlings.BusinessLogic.Dtos;
+using Buzzlings.BusinessLogic.Models.Enums;
+using Buzzlings.BusinessLogic.Services.Buzzling;
 using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.User;
+using Buzzlings.BusinessLogic.Simulation;
+using Buzzlings.BusinessLogic.Utils;
+using Buzzlings.Data.Constants;
 using Buzzlings.Data.Models;
 using Buzzlings.Data.Repositories.Interfaces;
 using Buzzlings.Web.Models;
@@ -21,6 +26,8 @@ namespace Buzzlings.Web.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly SimulationEventHandler _simulationEventHandler;
+
         public DashboardController(IUserService userService,
             IHiveService hiveService, IBuzzlingService buzzlingService,
             SignInManager<User> signInManager, IUnitOfWork unitOfWork)
@@ -30,6 +37,8 @@ namespace Buzzlings.Web.Controllers
             _buzzlingService = buzzlingService;
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
+
+            _simulationEventHandler = new SimulationEventHandler();
         }
 
         public async Task<IActionResult> Index(DashboardViewModel dashboardVM)
@@ -111,7 +120,7 @@ namespace Buzzlings.Web.Controllers
                 {
                     Name = dashboardVM.BuzzlingName,
                     Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!)),
-                    Mood = 100
+                    Mood = BuzzlingConstants.MoodDefaultValue
                 };
 
                 await _buzzlingService.Create(buzzling);
@@ -126,7 +135,7 @@ namespace Buzzlings.Web.Controllers
 
                 await _userService.Update(dashboardVM.User!);
 
-                dashboardVM.BuzzlingName = String.Empty;
+                dashboardVM.BuzzlingName = string.Empty;
                 dashboardVM.BuzzlingRole = "0";
 
                 dashboardVM.IgnoreBuzzlingNameValidation = true;
@@ -162,21 +171,30 @@ namespace Buzzlings.Web.Controllers
 
             Buzzling buzzling = await _buzzlingService.GetById(dashboardVM.BuzzlingId!.Value);
 
-            if (ModelState.IsValid)
+            if (buzzling is not null)
             {
-                buzzling.Name = dashboardVM.BuzzlingName;
-                buzzling.Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!));
+                if (ModelState.IsValid)
+                {
+                    buzzling.Name = dashboardVM.BuzzlingName;
+                    buzzling.Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!));
 
-                await _buzzlingService.Update(buzzling);
+                    await _buzzlingService.Update(buzzling);
 
-                dashboardVM.BuzzlingName = String.Empty;
-                dashboardVM.BuzzlingRole = "0";
+                    dashboardVM.BuzzlingName = string.Empty;
+                    dashboardVM.BuzzlingRole = "0";
 
-                dashboardVM.IgnoreBuzzlingNameValidation = true;
+                    dashboardVM.IgnoreBuzzlingNameValidation = true;
+                }
+                else
+                {
+                    dashboardVM.IsUpdateAttempt = true;
+                }
             }
             else
             {
-                dashboardVM.IsUpdateAttempt = true;
+                dashboardVM.BuzzlingName = string.Empty;
+                dashboardVM.BuzzlingRole = "0";
+                dashboardVM.IgnoreBuzzlingNameValidation = true;
             }
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);
@@ -196,36 +214,43 @@ namespace Buzzlings.Web.Controllers
             return RedirectToAction("Index", "Dashboard", dashboardVM);
         }
 
-        public async Task UpdateSimulation()
+        public async Task<IActionResult> UpdateHiveHappiness()
         {
-            //+1 year = 10 seconds
-            //Simulation update
-                //Below 6 years: 4 seconds
-                //6 - 10 years: 3 seconds
-                //10+ years: 2 seconds
+            User user = await _userService.GetUser(User);
 
-            //Add emojis to messages to make it easier to read
-            //Bees for buzzlings, role-specific ones, disaster-specific ones...etc
+            if (user.HiveId.HasValue)
+            {
+                Hive hive = await _hiveService.GetWithBuzzlingsAndRoles(h => h.Id == user.HiveId);
 
-            //BuzzlingCreationMotivatorEvent (text-only, no real impact)
-            //AdverseHiveEvent (affects overall mood, may kill buzzlings)
-                //WeatherEvent (storm, heat wave, cold front) - say that need more workers maybe
-                //HiveAttackEvent (wasps, ants, curious kids) - say that needs more guards maybe
-                //DiseaseOutbreakEvent - say that needs more nurses maybe
-                //NectarShortageEvent - say that needs more foragers maybe
-                //QueenUnhappyEvent - say that needs more drones and attendants maybe
+                SimulationEventDto simulationEvent =
+                    _simulationEventHandler.GenerateEvent(
+                        hive.Buzzlings is not null ? hive.Buzzlings.ToList() : new List<Buzzling>(),
+                        hive.EventLog?.Last());
 
-            //SingleBuzzlingEvent
-            //(I need a property in buzzling to track their "current request")
-            //(I may also need a "last changed" property so they ask for it from time to time based on the "year" they were born)
-                //By rivalry
-                    //By role (other)
-                    //By name (other)
-                //By role (own)
-                //By name (own)
-                //By action (mood-dependent)
-                //By mood (may affect others)
-            //DecorationBuzzlingEvent (no impact)
+                if (simulationEvent.buzzlingsToDelete > 0)
+                {
+                    for (int i = 0; i < simulationEvent.buzzlingsToDelete; i++)
+                    {
+                        await _buzzlingService.Delete(hive.Buzzlings!.ElementAt(RandomUtils.GetRandomRangeValue(0, hive.Buzzlings!.Count - 1)));
+                    }
+                }
+
+                if (hive.Buzzlings is not null && hive.Buzzlings.Count > 0)
+                {
+                    await _buzzlingService.BulkUpdate(hive.Buzzlings);
+                }
+
+                hive.Happiness += simulationEvent.happinessImpact;
+                hive.Happiness = Math.Clamp(hive.Happiness!.Value, 0, 100);
+
+                hive.EventLog?.Add(simulationEvent.log);
+
+                await _hiveService.Update(hive);
+
+                return Json(new { happiness = hive.Happiness });
+            }
+
+            return Json(new { happiness = 0 });
         }
 
         public async Task<IActionResult> UpdateHiveAge()
@@ -274,6 +299,23 @@ namespace Buzzlings.Web.Controllers
             }
 
             return Json(new { log = new List<string>() });
+        }
+
+        public async Task<IActionResult> GetBuzzlingsTablePartial()
+        {
+            User user = await _userService.GetUser(User);
+
+            if (user.HiveId.HasValue)
+            {
+                Hive hive = await _hiveService.GetWithBuzzlingsAndRoles(h => h.Id == user.HiveId);
+
+                if (hive.Buzzlings is not null)
+                {
+                    return PartialView("_BuzzlingsTablePartial", hive.Buzzlings);
+                }
+            }
+
+            return PartialView("_BuzzlingsTablePartial", new List<Buzzling>());  // Return an empty list if no buzzlings
         }
 
         public async Task<IActionResult> FilterBuzzlings(string query)

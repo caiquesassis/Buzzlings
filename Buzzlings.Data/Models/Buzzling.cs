@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Buzzlings.Data.Constants;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Buzzlings.Data.Models
@@ -11,8 +12,8 @@ namespace Buzzlings.Data.Models
         public int? RoleId;
         [ForeignKey("RoleId")]
         public BuzzlingRole? Role { get; set; }
-        [Range(0, 100)]
-        public int? Mood { get; set; } = 100;
+        [Range(0, BuzzlingConstants.MoodMaxRange)]
+        public int? Mood { get; set; }
         public int? HiveId { get; set; }
 
         [ForeignKey("HiveId")]
