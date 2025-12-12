@@ -94,13 +94,13 @@ html, body {
 .left-container {
     display: flex;
     flex-direction: column; /* Stack elements vertically */
-    width: 60%; /* Left container width */
+    width: 55%; /* Left container width */
     height: auto; /* Allow vertical expansion */
 }
 
 /* Buzzlings table container (right side) */
 .buzzlings-table-container {
-    width: 40%;
+    width: 45%;
 }
 
 /* Event log styling ============================================ */
@@ -120,7 +120,7 @@ html, body {
 /* Buzzlings table styling  =================================== */
 
 .table-container {
-    max-height: 300px;
+    max-height: 332px;
     overflow-y: auto;
     border: 2px solid #000;
     background-color: #fff;
