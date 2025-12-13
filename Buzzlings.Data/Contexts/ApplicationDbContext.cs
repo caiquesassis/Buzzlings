@@ -25,6 +25,16 @@ namespace Buzzlings.Data.Contexts
                 new { Id = 6, Name = "Attendant"}
             );
 
+            //When a Hive is deleted, is should first null the 
+            //Foreign Key reference in the User. Otherwise it'll throw an error.
+            //This is needed when deleting async only, otherwise EFC takes care of it itself...
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Hive) //Can't use .HasOne<Hive>() as it'll create a new field in the table
+                .WithMany()
+                .HasForeignKey(u => u.HiveId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            //When a Hive is deleted, we should delete all of its Buzllings too
             modelBuilder.Entity<Buzzling>()
                 .HasOne(b => b.Hive)
                 .WithMany(h => h.Buzzlings)

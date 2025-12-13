@@ -46,8 +46,9 @@ namespace Buzzlings.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Age = table.Column<int>(type: "int", nullable: true),
+                    Happiness = table.Column<int>(type: "int", nullable: true),
                     EventLog = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -104,7 +105,8 @@ namespace Buzzlings.Data.Migrations
                         name: "FK_AspNetUsers_Hives_HiveId",
                         column: x => x.HiveId,
                         principalTable: "Hives",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,7 +132,8 @@ namespace Buzzlings.Data.Migrations
                         name: "FK_Buzzlings_Hives_HiveId",
                         column: x => x.HiveId,
                         principalTable: "Hives",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

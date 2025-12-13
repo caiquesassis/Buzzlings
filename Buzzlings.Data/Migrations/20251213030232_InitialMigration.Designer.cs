@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Buzzlings.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251121000749_InitialMigration")]
+    [Migration("20251213030232_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -117,10 +117,13 @@ namespace Buzzlings.Data.Migrations
                     b.PrimitiveCollection<string>("EventLog")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Happiness")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -336,13 +339,16 @@ namespace Buzzlings.Data.Migrations
 
             modelBuilder.Entity("Buzzlings.Data.Models.Buzzling", b =>
                 {
-                    b.HasOne("Buzzlings.Data.Models.Hive", null)
+                    b.HasOne("Buzzlings.Data.Models.Hive", "Hive")
                         .WithMany("Buzzlings")
-                        .HasForeignKey("HiveId");
+                        .HasForeignKey("HiveId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Buzzlings.Data.Models.BuzzlingRole", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId");
+
+                    b.Navigation("Hive");
 
                     b.Navigation("Role");
                 });
@@ -351,7 +357,8 @@ namespace Buzzlings.Data.Migrations
                 {
                     b.HasOne("Buzzlings.Data.Models.Hive", "Hive")
                         .WithMany()
-                        .HasForeignKey("HiveId");
+                        .HasForeignKey("HiveId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Hive");
                 });

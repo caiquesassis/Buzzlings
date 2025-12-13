@@ -354,7 +354,8 @@ namespace Buzzlings.Data.Migrations
                 {
                     b.HasOne("Buzzlings.Data.Models.Hive", "Hive")
                         .WithMany()
-                        .HasForeignKey("HiveId");
+                        .HasForeignKey("HiveId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Hive");
                 });
