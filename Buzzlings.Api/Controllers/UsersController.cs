@@ -24,7 +24,7 @@ namespace Buzzlings.Api.Controllers
                 UserName = createUserDto.Username
             };
 
-            await _userService.Create(user, createUserDto.Password);
+            await _userService.CreateAsync(user, createUserDto.Password);
 
             return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
         }
@@ -32,7 +32,7 @@ namespace Buzzlings.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            IEnumerable<User> users = await _userService.GetAll();
+            IEnumerable<User> users = await _userService.GetAllAsync();
 
             return Ok(users);
         }
@@ -41,7 +41,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            User user = await _userService.GetById(id);
+            User? user = await _userService.GetByIdAsync(id);
 
             if(user is null)
             {
@@ -55,7 +55,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> UpdateUser(int id, UpdateUserDto updateUserDto)
         {
-            User user = await _userService.GetById(id);
+            User? user = await _userService.GetByIdAsync(id);
 
             if (user is null)
             {
@@ -64,7 +64,7 @@ namespace Buzzlings.Api.Controllers
 
             user.UserName = updateUserDto.Username;
 
-            await _userService.Update(user);
+            await _userService.UpdateAsync(user);
 
             return Ok(user);
         }
@@ -73,14 +73,14 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            User user = await _userService.GetById(id);
+            User? user = await _userService.GetByIdAsync(id);
 
             if (user is null)
             {
                 return NotFound();
             }
 
-            await _userService.Delete(user);
+            await _userService.DeleteAsync(user);
 
             return Ok();
         }

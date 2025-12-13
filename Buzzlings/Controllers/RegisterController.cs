@@ -27,7 +27,7 @@ namespace Buzzlings.Web.Controllers
             if (string.IsNullOrWhiteSpace(registerVM.Username) == false)
             {
                 //Check if there's someone already using the provided username
-                if (await _userService.GetByUsername(registerVM.Username) is not null)
+                if (await _userService.GetByUsernameAsync(registerVM.Username) is not null)
                 {
                     ModelState.AddModelError("Username", "This username is already in use.");
 
@@ -43,7 +43,7 @@ namespace Buzzlings.Web.Controllers
                     UserName = registerVM.Username
                 };
 
-                IdentityResult result = await _userService.Create(user, registerVM.Password!);
+                IdentityResult result = await _userService.CreateAsync(user, registerVM.Password!);
 
                 if (result.Succeeded)
                 {

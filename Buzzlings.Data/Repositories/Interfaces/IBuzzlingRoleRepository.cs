@@ -4,6 +4,6 @@ namespace Buzzlings.Data.Repositories.Interfaces
 {
     public interface IBuzzlingRoleRepository : IRepository<BuzzlingRole>
     {
-        void Update(BuzzlingRole role);
+        Task UpdateAsync(BuzzlingRole role);
     }
 }

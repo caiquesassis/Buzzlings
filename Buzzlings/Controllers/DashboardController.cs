@@ -48,13 +48,13 @@ namespace Buzzlings.Web.Controllers
             Response.Headers["Pragma"] = "no-cache";
             Response.Headers["Expires"] = "-1";
 
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             dashboardVM.User = user;
 
-            if (dashboardVM.User.HiveId.HasValue)
+            if (dashboardVM.User!.HiveId.HasValue)
             {
-                dashboardVM.User.Hive = await _hiveService.Get(h => h.Id == dashboardVM.User.HiveId, "Buzzlings");
+                dashboardVM.User.Hive = await _hiveService.GetAsync(h => h.Id == dashboardVM.User.HiveId, "Buzzlings");
             }
 
             if (dashboardVM.IgnoreHiveNameValidation)
@@ -73,7 +73,7 @@ namespace Buzzlings.Web.Controllers
                 }
             }
 
-            SelectList rolesSelectList = new SelectList(await _unitOfWork.BuzzlingRoleRepository.GetAll(), "Id", "Name");
+            SelectList rolesSelectList = new SelectList(await _unitOfWork.BuzzlingRoleRepository.GetAllAsync(), "Id", "Name");
 
             ViewData["rolesSelectList"] = rolesSelectList;
 
@@ -93,13 +93,13 @@ namespace Buzzlings.Web.Controllers
             {
                 Hive hive = new Hive { Name = dashboardVM.HiveName };
 
-                await _hiveService.Create(hive);
+                await _hiveService.CreateAsync(hive);
 
-                dashboardVM.User = await _userService.GetUser(User);
+                dashboardVM.User = await _userService.GetUserAsync(User);
 
-                dashboardVM.User.Hive = hive;
+                dashboardVM.User!.Hive = hive;
 
-                await _userService.Update(dashboardVM.User);
+                await _userService.UpdateAsync(dashboardVM.User);
             }
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);
@@ -119,21 +119,21 @@ namespace Buzzlings.Web.Controllers
                 Buzzling buzzling = new Buzzling
                 {
                     Name = dashboardVM.BuzzlingName,
-                    Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!)),
+                    Role = await _unitOfWork.BuzzlingRoleRepository.GetAsync((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!)),
                     Mood = BuzzlingConstants.MoodDefaultValue
                 };
 
-                await _buzzlingService.Create(buzzling);
+                await _buzzlingService.CreateAsync(buzzling);
 
-                dashboardVM.User = await _userService.GetUser(User);
+                dashboardVM.User = await _userService.GetUserAsync(User);
 
-                dashboardVM.User.Hive = await _hiveService.Get(h => h.Id == dashboardVM.User.HiveId, "Buzzlings");
+                dashboardVM.User!.Hive = await _hiveService.GetAsync(h => h.Id == dashboardVM.User.HiveId, "Buzzlings");
 
                 dashboardVM.User.Hive?.Buzzlings?.Add(buzzling);
 
-                await _hiveService.Update(dashboardVM.User?.Hive!);
+                await _hiveService.UpdateAsync(dashboardVM.User?.Hive!);
 
-                await _userService.Update(dashboardVM.User!);
+                await _userService.UpdateAsync(dashboardVM.User!);
 
                 dashboardVM.BuzzlingName = string.Empty;
                 dashboardVM.BuzzlingRole = "0";
@@ -147,13 +147,13 @@ namespace Buzzlings.Web.Controllers
 
         public async Task<IActionResult> UpdateBuzzling(int id)
         {
-            Buzzling buzzling = await _buzzlingService.GetById(id);
+            Buzzling? buzzling = await _buzzlingService.GetByIdAsync(id);
 
             DashboardViewModel dashboardVM = new DashboardViewModel
             {
-                BuzzlingName = buzzling.Name,
-                BuzzlingRole = buzzling.RoleId.ToString(),
-                BuzzlingId = buzzling.Id,
+                BuzzlingName = buzzling?.Name,
+                BuzzlingRole = buzzling?.RoleId.ToString(),
+                BuzzlingId = buzzling?.Id,
                 IsUpdateAttempt = true
             };
 
@@ -169,16 +169,16 @@ namespace Buzzlings.Web.Controllers
 
             ModelState.Remove("HiveName");
 
-            Buzzling buzzling = await _buzzlingService.GetById(dashboardVM.BuzzlingId!.Value);
+            Buzzling? buzzling = await _buzzlingService.GetByIdAsync(dashboardVM.BuzzlingId!.Value);
 
             if (buzzling is not null)
             {
                 if (ModelState.IsValid)
                 {
                     buzzling.Name = dashboardVM.BuzzlingName;
-                    buzzling.Role = await _unitOfWork.BuzzlingRoleRepository.Get((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!));
+                    buzzling.Role = await _unitOfWork.BuzzlingRoleRepository.GetAsync((r) => r.Id == Int32.Parse(dashboardVM.BuzzlingRole!));
 
-                    await _buzzlingService.Update(buzzling);
+                    await _buzzlingService.UpdateAsync(buzzling);
 
                     dashboardVM.BuzzlingName = string.Empty;
                     dashboardVM.BuzzlingRole = "0";
@@ -207,45 +207,46 @@ namespace Buzzlings.Web.Controllers
             dashboardVM.IgnoreHiveNameValidation = true;
             dashboardVM.IgnoreBuzzlingNameValidation = true;
 
-            Buzzling buzzling = await _buzzlingService.GetById(id);
+            Buzzling? buzzling = await _buzzlingService.GetByIdAsync(id);
 
-            await _buzzlingService.Delete(buzzling);
+            await _buzzlingService.DeleteAsync(buzzling!);
 
             return RedirectToAction("Index", "Dashboard", dashboardVM);
         }
 
         public async Task<IActionResult> UpdateHiveHappiness()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
-            if (user.HiveId.HasValue)
+            if (user is not null && user.HiveId.HasValue)
             {
-                Hive hive = await _hiveService.GetWithBuzzlingsAndRoles(h => h.Id == user.HiveId);
+                Hive? hive = await _hiveService.GetWithBuzzlingsAndRolesAsync(h => h.Id == user.HiveId);
 
                 SimulationEventDto simulationEvent =
                     _simulationEventHandler.GenerateEvent(
-                        hive.Buzzlings is not null ? hive.Buzzlings.ToList() : new List<Buzzling>(),
+                        hive!.Buzzlings is not null ? hive.Buzzlings.ToList() : new List<Buzzling>(),
                         hive.EventLog?.Last());
 
                 if (simulationEvent.buzzlingsToDelete > 0)
                 {
                     for (int i = 0; i < simulationEvent.buzzlingsToDelete; i++)
                     {
-                        await _buzzlingService.Delete(hive.Buzzlings!.ElementAt(RandomUtils.GetRandomRangeValue(0, hive.Buzzlings!.Count - 1)));
+                        await _buzzlingService.DeleteAsync(hive!.Buzzlings!.ElementAt(RandomUtils.GetRandomRangeValue(0, hive.Buzzlings!.Count - 1)));
                     }
                 }
 
                 if (hive.Buzzlings is not null && hive.Buzzlings.Count > 0)
                 {
-                    await _buzzlingService.BulkUpdate(hive.Buzzlings);
+                    await _buzzlingService.BulkUpdateAsync(hive.Buzzlings);
                 }
 
                 hive.Happiness += simulationEvent.happinessImpact;
+                //hive.Happiness -= 50;
                 hive.Happiness = Math.Clamp(hive.Happiness!.Value, 0, 100);
 
                 hive.EventLog?.Add(simulationEvent.log);
 
-                await _hiveService.Update(hive);
+                await _hiveService.UpdateAsync(hive);
 
                 return Json(new { happiness = hive.Happiness });
             }
@@ -255,18 +256,18 @@ namespace Buzzlings.Web.Controllers
 
         public async Task<IActionResult> UpdateHiveAge()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
-            if (user.HiveId.HasValue)
+            if (user is not null && user.HiveId.HasValue)
             {
-                Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+                Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId);
 
-                if (hive.Happiness > 0)
+                if (hive!.Happiness > 0)
                 {
                     hive.Age++;
                 }
 
-                await _hiveService.Update(hive);
+                await _hiveService.UpdateAsync(hive);
 
                 return Json(new { age = hive.Age });
             }
@@ -276,19 +277,19 @@ namespace Buzzlings.Web.Controllers
 
         public async Task<IActionResult> GetEventLog(int lastLogIndex = 0)
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
-            if (user.HiveId.HasValue)
+            if (user is not null && user.HiveId.HasValue)
             {
-                Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+                Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId);
 
-                if (hive.EventLog is null)
+                if (hive!.EventLog is null)
                 {
                     hive.EventLog = new List<string>();
 
                     hive.EventLog?.Add("🍯 " + hive.Name + " 🍯 is born!");
 
-                    await _hiveService.Update(hive);
+                    await _hiveService.UpdateAsync(hive);
                 }
 
                 List<string>? newLogs = hive.EventLog?.Skip(lastLogIndex).ToList();
@@ -303,13 +304,13 @@ namespace Buzzlings.Web.Controllers
 
         public async Task<IActionResult> GetBuzzlingsTablePartial()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
-            if (user.HiveId.HasValue)
+            if (user is not null && user.HiveId.HasValue)
             {
-                Hive hive = await _hiveService.GetWithBuzzlingsAndRoles(h => h.Id == user.HiveId);
+                Hive? hive = await _hiveService.GetWithBuzzlingsAndRolesAsync(h => h.Id == user.HiveId);
 
-                if (hive.Buzzlings is not null)
+                if (hive!.Buzzlings is not null)
                 {
                     return PartialView("_BuzzlingsTablePartial", hive.Buzzlings);
                 }
@@ -322,13 +323,13 @@ namespace Buzzlings.Web.Controllers
         {
             List<Buzzling> buzzlings = new List<Buzzling>();
 
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
-            if (user.HiveId.HasValue)
+            if (user is not null && user.HiveId.HasValue)
             {
-                Hive hive = await _hiveService.GetWithBuzzlingsAndRoles(h => h.Id == user.HiveId);
+                Hive? hive = await _hiveService.GetWithBuzzlingsAndRolesAsync(h => h.Id == user.HiveId);
 
-                if (hive.Buzzlings is not null)
+                if (hive!.Buzzlings is not null)
                 {
                     buzzlings = hive.Buzzlings.Where(b =>
                         string.IsNullOrEmpty(query) || //If the query is empty, return full list
@@ -341,14 +342,19 @@ namespace Buzzlings.Web.Controllers
             return PartialView("_BuzzlingsTablePartial", buzzlings);
         }
 
+        public void DeleteHiveOnSimulationEnd()
+        {
+
+        }
+
         public async Task<IActionResult> LogOut()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             if (user is not null)
             {
                 // Update the security stamp to invalidate existing sessions
-                await _userService.UpdateSecurityStamp(user);
+                await _userService.UpdateSecurityStampAsync(user);
             }
 
             await _signInManager.SignOutAsync();

@@ -33,14 +33,16 @@ namespace Buzzlings.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _userService.GetByUsername(logInVM.Username!);
+                User? user = await _userService.GetByUsernameAsync(logInVM.Username!);
+
                 if(user is null)
                 {
                     ModelState.AddModelError("InvalidLoginAttempt", "Invalid login attempt.");
                     return View(logInVM);
                 }
 
-                bool passwordValid = await _userService.CheckPassword(user, logInVM.Password!);
+                bool passwordValid = await _userService.CheckPasswordAsync(user, logInVM.Password!);
+
                 if (passwordValid == false)
                 {
                     ModelState.AddModelError("InvalidLoginAttempt", "Invalid login attempt.");

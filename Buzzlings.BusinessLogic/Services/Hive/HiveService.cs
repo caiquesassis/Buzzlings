@@ -12,42 +12,42 @@ namespace Buzzlings.BusinessLogic.Services.Hive
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Create(Data.Models.Hive hive)
+        public async Task CreateAsync(Data.Models.Hive hive)
         {
-            _unitOfWork.HiveRepository.Add(hive);
-            await _unitOfWork.Save();
+            await _unitOfWork.HiveRepository.AddAsync(hive);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task<IEnumerable<Data.Models.Hive>> GetAll()
+        public async Task<IEnumerable<Data.Models.Hive?>> GetAllAsync()
         {
-            return await _unitOfWork.HiveRepository.GetAll();
+            return await _unitOfWork.HiveRepository.GetAllAsync();
         }
 
-        public async Task<Data.Models.Hive> Get(Expression<Func<Data.Models.Hive, bool>> filter, string? includeProperties = null)
+        public async Task<Data.Models.Hive?> GetAsync(Expression<Func<Data.Models.Hive, bool>> filter, string? includeProperties = null)
         {
-            return await _unitOfWork.HiveRepository.Get(filter, includeProperties);
+            return await _unitOfWork.HiveRepository.GetAsync(filter, includeProperties);
         }
 
-        public async Task<Data.Models.Hive> GetWithBuzzlingsAndRoles(Expression<Func<Data.Models.Hive, bool>> filter)
+        public async Task<Data.Models.Hive?> GetWithBuzzlingsAndRolesAsync(Expression<Func<Data.Models.Hive, bool>> filter)
         {
-            return await _unitOfWork.HiveRepository.GetWithBuzzlingsAndRoles(filter);
+            return await _unitOfWork.HiveRepository.GetWithBuzzlingsAndRolesAsync(filter);
         }
 
-        public async Task<Data.Models.Hive> GetById(int id)
+        public async Task<Data.Models.Hive?> GetByIdAsync(int id)
         {
-            return await _unitOfWork.HiveRepository.Get(h => h.Id == id);
+            return await _unitOfWork.HiveRepository.GetAsync(h => h.Id == id);
         }
 
-        public async Task Update(Data.Models.Hive hive)
+        public async Task UpdateAsync(Data.Models.Hive hive)
         {
-            _unitOfWork.HiveRepository.Update(hive);
-            await _unitOfWork.Save();
+            await _unitOfWork.HiveRepository.UpdateAsync(hive);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task Delete(Data.Models.Hive hive)
+        public async Task DeleteAsync(Data.Models.Hive hive)
         {
-            _unitOfWork.HiveRepository.Remove(hive);
-            await _unitOfWork.Save();
+            await _unitOfWork.HiveRepository.DeleteAsync(hive);
+            await _unitOfWork.SaveAsync();
         }
     }
 }

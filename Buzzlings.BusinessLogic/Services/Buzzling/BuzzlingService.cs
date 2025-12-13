@@ -11,44 +11,44 @@ namespace Buzzlings.BusinessLogic.Services.Buzzling
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Create(Data.Models.Buzzling buzzling)
+        public async Task CreateAsync(Data.Models.Buzzling buzzling)
         {
-            _unitOfWork.BuzzlingRepository.Add(buzzling);
-            await _unitOfWork.Save();
+            await _unitOfWork.BuzzlingRepository.AddAsync(buzzling);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task<IEnumerable<Data.Models.Buzzling>> GetAll()
+        public async Task<IEnumerable<Data.Models.Buzzling?>> GetAllAsync()
         {
-            return await _unitOfWork.BuzzlingRepository.GetAll();
+            return await _unitOfWork.BuzzlingRepository.GetAllAsync();
         }
 
-        public async Task<Data.Models.Buzzling> GetById(int id)
+        public async Task<Data.Models.Buzzling?> GetByIdAsync(int id)
         {
-            return await _unitOfWork.BuzzlingRepository.Get(b => b.Id == id);
+            return await _unitOfWork.BuzzlingRepository.GetAsync(b => b.Id == id);
         }
 
-        public async Task Update(Data.Models.Buzzling buzzling)
+        public async Task UpdateAsync(Data.Models.Buzzling buzzling)
         {
-            _unitOfWork.BuzzlingRepository.Update(buzzling);
-            await _unitOfWork.Save();
+            await _unitOfWork.BuzzlingRepository.UpdateAsync(buzzling);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task BulkUpdate(ICollection<Data.Models.Buzzling> buzzlings)
+        public async Task BulkUpdateAsync(ICollection<Data.Models.Buzzling> buzzlings)
         {
-            await _unitOfWork.BuzzlingRepository.BulkUpdate(buzzlings);
-            await _unitOfWork.Save();
+            await _unitOfWork.BuzzlingRepository.BulkUpdateAsync(buzzlings);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task Delete(Data.Models.Buzzling buzzling)
+        public async Task DeleteAsync(Data.Models.Buzzling buzzling)
         {
-            _unitOfWork.BuzzlingRepository.Remove(buzzling);
-            await _unitOfWork.Save();
+            await _unitOfWork.BuzzlingRepository.DeleteAsync(buzzling);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task DeleteRange(ICollection<Data.Models.Buzzling> buzzlings)
+        public async Task DeleteRangeAsync(ICollection<Data.Models.Buzzling> buzzlings)
         {
-            _unitOfWork.BuzzlingRepository.RemoveRange(buzzlings);
-            await _unitOfWork.Save();
+            await _unitOfWork.BuzzlingRepository.DeleteRangeAsync(buzzlings);
+            await _unitOfWork.SaveAsync();
         }
     }
 }

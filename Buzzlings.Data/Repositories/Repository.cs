@@ -1,6 +1,7 @@
 ﻿using Buzzlings.Data.Contexts;
 using Buzzlings.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 
 namespace Buzzlings.Data.Repositories
@@ -16,12 +17,12 @@ namespace Buzzlings.Data.Repositories
             dbSet = _dbContext.Set<T>();
         }
 
-        public void Add(T entity)
+        public async Task<EntityEntry<T>> AddAsync(T entity)
         {
-            dbSet.Add(entity);
+            return await dbSet.AddAsync(entity);
         }
 
-        public async Task<T> Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             query = query.Where(filter);
@@ -35,7 +36,7 @@ namespace Buzzlings.Data.Repositories
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAll(string? includeProperties = null)
+        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (!string.IsNullOrEmpty(includeProperties))
@@ -48,14 +49,14 @@ namespace Buzzlings.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public void Remove(T entity)
+        public async Task DeleteAsync(T entity)
         {
-            dbSet.Remove(entity);
+            await dbSet.SingleDeleteAsync(entity);
         }
 
-        public void RemoveRange(IEnumerable<T> entity)
+        public async Task DeleteRangeAsync(IEnumerable<T> entities)
         {
-            dbSet.RemoveRange(entity);
+            await dbSet.BulkDeleteAsync(entities);
         }
     }
 }

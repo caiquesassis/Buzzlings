@@ -19,7 +19,7 @@ namespace Buzzlings.Data.Repositories
             BuzzlingRoleRepository = new BuzzlingRoleRepository(_dbContext);
         }
 
-        public async Task Save()
+        public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }

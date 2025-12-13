@@ -15,18 +15,18 @@ namespace Buzzlings.Data.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Hive> GetWithBuzzlingsAndRoles(Expression<Func<Hive, bool>> filter)
+        public async Task<Hive?> GetWithBuzzlingsAndRolesAsync(Expression<Func<Hive, bool>> filter)
         {
             return await _dbContext.Hives
                 .Where(filter)
-                .Include(hive => hive.Buzzlings)
+                .Include(hive => hive.Buzzlings!)
                 .ThenInclude(buzzling => buzzling.Role)
                 .FirstOrDefaultAsync();
         }
 
-        public void Update(Hive hive)
+        public async Task UpdateAsync(Hive hive)
         {
-            _dbContext.Entry(hive).CurrentValues.SetValues(hive);
+            await _dbContext.SingleUpdateAsync(hive);
         }
     }
 }

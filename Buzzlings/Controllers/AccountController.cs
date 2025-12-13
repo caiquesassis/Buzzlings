@@ -45,7 +45,7 @@ namespace Buzzlings.Web.Controllers
             if (string.IsNullOrWhiteSpace(updateUsernameVM.Username) == false)
             {
                 //Check if there's someone already using the provided username
-                if (await _userService.GetByUsername(updateUsernameVM.Username) is not null)
+                if (await _userService.GetByUsernameAsync(updateUsernameVM.Username) is not null)
                 {
                     ModelState.AddModelError("Username", "This username is already in use.");
 
@@ -56,13 +56,13 @@ namespace Buzzlings.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                User user = await _userService.GetUser(User);
+                User? user = await _userService.GetUserAsync(User);
 
                 if(user is not null)
                 {
                     user.UserName = updateUsernameVM.Username;
 
-                    IdentityResult result = await _userService.Update(user);
+                    IdentityResult result = await _userService.UpdateAsync(user);
 
                     if (result.Succeeded)
                     {
@@ -102,16 +102,16 @@ namespace Buzzlings.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _userService.GetUser(User);
+                User? user = await _userService.GetUserAsync(User);
 
                 if (user is not null)
                 {
-                    IdentityResult result = await _userService.UpdatePassword(user, updatePasswordVM.CurrentPassword!, updatePasswordVM.NewPassword!);
+                    IdentityResult result = await _userService.UpdatePasswordAsync(user, updatePasswordVM.CurrentPassword!, updatePasswordVM.NewPassword!);
 
                     if (result.Succeeded)
                     {
                         // Update the security stamp to invalidate existing sessions
-                        await _userService.UpdateSecurityStamp(user);
+                        await _userService.UpdateSecurityStampAsync(user);
 
                         //Re-sign in the user to update claims in the authentication cookie
                         await _signInManager.RefreshSignInAsync(user);
@@ -146,26 +146,26 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAccountConfirmed()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             if (user is not null)
             {
                 if (user.HiveId is not null)
                 {
-                    Hive hive = await _hiveService.Get(h => h.Id == user.HiveId, "Buzzlings");
+                    Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId, "Buzzlings");
 
                     if (hive is not null)
                     {
-                        await _hiveService.Delete(hive);
+                        await _hiveService.DeleteAsync(hive);
                     }
                 }
 
-                var result = await _userService.Delete(user);
+                var result = await _userService.DeleteAsync(user);
 
                 if (result.Succeeded)
                 {
                     // Update the security stamp to invalidate existing sessions
-                    await _userService.UpdateSecurityStamp(user);
+                    await _userService.UpdateSecurityStampAsync(user);
 
                     await _signInManager.SignOutAsync();
 
@@ -183,7 +183,7 @@ namespace Buzzlings.Web.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeHiveName()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             UpdateHiveNameViewModel updateHiveNameVM = new UpdateHiveNameViewModel { User = user };
 
@@ -195,7 +195,7 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeHiveName(UpdateHiveNameViewModel updateHiveNameVM)
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             updateHiveNameVM.User = user;
 
@@ -205,11 +205,11 @@ namespace Buzzlings.Web.Controllers
                 {
                     if (user.HiveId is not null)
                     {
-                        Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+                        Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId);
 
-                        hive.Name = updateHiveNameVM.HiveName;
+                        hive!.Name = updateHiveNameVM.HiveName;
 
-                        await _hiveService.Update(hive);
+                        await _hiveService.UpdateAsync(hive);
 
                         return RedirectToAction("UpdateSuccess", "Account");
                     }
@@ -226,7 +226,7 @@ namespace Buzzlings.Web.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteHive()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             return View(user);
         }
@@ -236,17 +236,17 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteHiveConfirmed()
         {
-            User user = await _userService.GetUser(User);
+            User? user = await _userService.GetUserAsync(User);
 
             if (user is not null)
             {
                 if (user.HiveId is not null)
                 {
-                    Hive hive = await _hiveService.Get(h => h.Id == user.HiveId);
+                    Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId);
 
                     if (hive is not null)
                     {
-                        await _hiveService.Delete(hive);
+                        await _hiveService.DeleteAsync(hive);
 
                         return RedirectToAction("DeleteHiveSuccess", "Account");
                     }

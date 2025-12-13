@@ -13,9 +13,9 @@ namespace Buzzlings.Data.Repositories
             _dbContext = dbContext;
         }
 
-        public void Update(BuzzlingRole role)
+        public async Task UpdateAsync(BuzzlingRole role)
         {
-            _dbContext.Entry(role).CurrentValues.SetValues(role);
+            await _dbContext.SingleUpdateAsync(role);
         }
     }
 }
