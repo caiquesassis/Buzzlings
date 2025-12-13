@@ -9,7 +9,7 @@ namespace Buzzlings.Web.Attributes
 
         }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value is string str)
             {
