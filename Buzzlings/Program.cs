@@ -1,10 +1,5 @@
-using Buzzlings.BusinessLogic.Services.Buzzling;
-using Buzzlings.BusinessLogic.Services.Hive;
-using Buzzlings.BusinessLogic.Services.User;
 using Buzzlings.Data.Contexts;
 using Buzzlings.Data.Models;
-using Buzzlings.Data.Repositories;
-using Buzzlings.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAuthorization();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+builder.Services.AddBusinessServices();
 
 builder.Services.AddDefaultIdentity<User>(options =>
     {
@@ -30,16 +26,6 @@ builder.Services.AddDefaultIdentity<User>(options =>
     })
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddScoped<IHiveRepository, HiveRepository>();
-builder.Services.AddScoped<IBuzzlingRepository, BuzzlingRepository>();
-builder.Services.AddScoped<IBuzzlingRoleRepository, BuzzlingRoleRepository>();
-
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IHiveService, HiveService>();
-builder.Services.AddScoped<IBuzzlingService, BuzzlingService>();
-
 builder.Services.ConfigureApplicationCookie(options => {
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
@@ -52,8 +38,6 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 {
     options.ValidationInterval = TimeSpan.Zero; // Invalidate immediately 
 });
-
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
