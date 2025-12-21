@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     </div>
-                    @if (Model.IsUpdateAttempt is false)
+                    @if (TempData["IsUpdateAttempt"] != null && (bool)TempData["IsUpdateAttempt"]! is false)
                     {
                         <partial name="_CreateBuzzlingPartial" />
                     }

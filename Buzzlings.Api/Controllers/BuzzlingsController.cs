@@ -26,7 +26,7 @@ namespace Buzzlings.Api.Controllers
                 Role = createBuzzlingDto.Role
             };
 
-            await _buzzlingService.CreateAsync(buzzling);
+            await _buzzlingService.CreateBuzzlingAsync(buzzling);
 
             return CreatedAtAction(nameof(GetBuzzlingById), new { id = buzzling.Id }, buzzling);
         }
@@ -34,7 +34,7 @@ namespace Buzzlings.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBuzzlings()
         {
-            IEnumerable<Buzzling?> buzzlings = await _buzzlingService.GetAllAsync();
+            IEnumerable<Buzzling?> buzzlings = await _buzzlingService.GetAllBuzzlingsAsync();
 
             return Ok(buzzlings);
         }
@@ -43,7 +43,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetBuzzlingById(int id)
         {
-            Buzzling? buzzling = await _buzzlingService.GetByIdAsync(id);
+            Buzzling? buzzling = await _buzzlingService.GetBuzzlingByIdAsync(id);
 
             if (buzzling is null)
             {
@@ -57,7 +57,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> UpdateBuzzling(int id, UpdateBuzzlingDto updateBuzzlingDto)
         {
-            Buzzling? buzzling = await _buzzlingService.GetByIdAsync(id);
+            Buzzling? buzzling = await _buzzlingService.GetBuzzlingByIdAsync(id);
 
             if (buzzling is null)
             {
@@ -67,7 +67,7 @@ namespace Buzzlings.Api.Controllers
             buzzling.Name = updateBuzzlingDto.Name;
             buzzling.Role = updateBuzzlingDto.Role;
 
-            await _buzzlingService.UpdateAsync(buzzling);
+            await _buzzlingService.UpdateBuzzlingAsync(buzzling);
 
             return Ok(buzzling);
         }
@@ -76,14 +76,14 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteBuzzling(int id)
         {
-            Buzzling? buzzling = await _buzzlingService.GetByIdAsync(id);
+            Buzzling? buzzling = await _buzzlingService.GetBuzzlingByIdAsync(id);
 
             if (buzzling is null)
             {
                 return NotFound();
             }
 
-            await _buzzlingService.DeleteAsync(buzzling);
+            await _buzzlingService.DeleteBuzzlingAsync(buzzling);
 
             return Ok();
         }

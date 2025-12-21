@@ -24,7 +24,7 @@ namespace Buzzlings.Api.Controllers
                 Name = createHiveDto.Name
             };
 
-            await _hiveService.CreateAsync(hive);
+            await _hiveService.CreateHiveAsync(hive);
 
             return CreatedAtAction(nameof(GetHiveById), new { id = hive.Id }, hive);
         }
@@ -32,7 +32,7 @@ namespace Buzzlings.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllHives()
         {
-            IEnumerable<Hive?> hives = await _hiveService.GetAllAsync();
+            IEnumerable<Hive?> hives = await _hiveService.GetAllHivesAsync();
 
             return Ok(hives);
         }
@@ -41,7 +41,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetHiveById(int id)
         {
-            Hive? hive = await _hiveService.GetByIdAsync(id);
+            Hive? hive = await _hiveService.GetHiveByIdAsync(id);
 
             if (hive is null)
             {
@@ -55,7 +55,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> UpdateHive(int id, UpdateHiveDto updateHiveDto)
         {
-            Hive? hive = await _hiveService.GetByIdAsync(id);
+            Hive? hive = await _hiveService.GetHiveByIdAsync(id);
 
             if (hive is null)
             {
@@ -64,7 +64,7 @@ namespace Buzzlings.Api.Controllers
 
             hive.Name = updateHiveDto.Name;
 
-            await _hiveService.UpdateAsync(hive);
+            await _hiveService.UpdateHiveAsync(hive);
 
             return Ok(hive);
         }
@@ -73,14 +73,14 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteHive(int id)
         {
-            Hive? hive = await _hiveService.GetByIdAsync(id);
+            Hive? hive = await _hiveService.GetHiveByIdAsync(id);
 
             if (hive is null)
             {
                 return NotFound();
             }
 
-            await _hiveService.DeleteAsync(hive);
+            await _hiveService.DeleteHiveAsync(hive);
 
             return Ok();
         }

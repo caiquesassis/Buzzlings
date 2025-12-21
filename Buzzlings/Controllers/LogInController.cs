@@ -31,33 +31,22 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn(LogInViewModel logInVM)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid is false)
             {
-                User? user = await _userService.GetByUsernameAsync(logInVM.Username!);
-
-                if(user is null)
-                {
-                    ModelState.AddModelError("InvalidLoginAttempt", "Invalid login attempt.");
-                    return View(logInVM);
-                }
-
-                bool passwordValid = await _userService.CheckPasswordAsync(user, logInVM.Password!);
-
-                if (passwordValid == false)
-                {
-                    ModelState.AddModelError("InvalidLoginAttempt", "Invalid login attempt.");
-                    return View(logInVM);
-                }
-
-                var result = await _signInManager.PasswordSignInAsync(user, logInVM.Password!, false, false);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Dashboard");
-                }
+                return View(logInVM);
             }
 
-            return View(logInVM);
+            Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(logInVM.Username!, logInVM.Password!, false, false);
+
+            if (result.Succeeded is false)
+            {
+                // Generic error message for security (prevents username enumeration)
+                ModelState.AddModelError("InvalidLoginAttempt", "Invalid login attempt.");
+
+                return View(logInVM);
+            }
+
+            return RedirectToAction("Index", "Dashboard");
         }
 
         public IActionResult Back()

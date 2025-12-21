@@ -1,20 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 
 namespace Buzzlings.BusinessLogic.Services.User
 {
     public interface IUserService
     {
-        Task<IdentityResult> CreateAsync(Data.Models.User user, string password);
-        Task<IEnumerable<Data.Models.User>> GetAllAsync();
-        Task<Data.Models.User?> GetUserAsync(ClaimsPrincipal principal);
-        Task<Data.Models.User?> GetByIdAsync(int id);
-        Task<Data.Models.User?> GetByUsernameAsync(string username);
-        Task<string> GetIdAsync(Data.Models.User user);
-        Task<bool> CheckPasswordAsync(Data.Models.User user, string password);
-        Task<IdentityResult> UpdateAsync(Data.Models.User user);
-        Task<IdentityResult> UpdatePasswordAsync(Data.Models.User user, string currentPassword, string newPassword);
-        Task<IdentityResult> UpdateSecurityStampAsync(Data.Models.User user);
-        Task<IdentityResult> DeleteAsync(Data.Models.User user);
+        Task<IdentityResult> RegisterNewUserAsync(string username, string password);
+        Task<(IdentityResult, Data.Models.User?)> ChangeUserNameAsync(string? userId, string newUsername);
+        Task<IEnumerable<Data.Models.User>> GetAllUsersAsync();
+        Task<Data.Models.User?> GetUserByIdAsync(string? userId, bool includeHive = false, bool includeBuzzlings = false, bool includeBuzzlingsRoles = false);
+        Task<Data.Models.User?> GetUserByUserNameAsync(string username);
+        Task<string> GetUserIdAsync(Data.Models.User user);
+        Task<bool> CheckUserPasswordAsync(Data.Models.User user, string password);
+        Task<IdentityResult> UpdateUserAsync(Data.Models.User user);
+        Task<(IdentityResult, Data.Models.User?)> UpdateUserPasswordAsync(string? userId, string currentPassword, string newPassword);
+        Task<IdentityResult> UpdateUserSecurityStampAsync(string? userId);
+        Task<IdentityResult> DeleteUserAsync(string? userId);
     }
 }

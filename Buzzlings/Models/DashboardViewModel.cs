@@ -19,8 +19,5 @@ namespace Buzzlings.Web.Models
         public string? BuzzlingName { get; set; }
         public string? BuzzlingRole { get; set; }
         public int? BuzzlingId { get; set; }
-        public bool IgnoreHiveNameValidation { get; set; } = true;
-        public bool IgnoreBuzzlingNameValidation { get; set; } = true;
-        public bool IsUpdateAttempt { get; set; } = false;
     }
 }

@@ -1,7 +1,7 @@
-﻿using Buzzlings.BusinessLogic.Services.Buzzling;
-using Buzzlings.BusinessLogic.Services.Hive;
+﻿using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.User;
 using Buzzlings.Data.Models;
+using Buzzlings.Web.Extensions;
 using Buzzlings.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,15 +13,13 @@ namespace Buzzlings.Web.Controllers
     {
         private readonly IUserService _userService;
         private readonly IHiveService _hiveService;
-        private readonly IBuzzlingService _buzzlingService;
         private readonly SignInManager<User> _signInManager;
 
         public AccountController(IUserService userService, IHiveService hiveService,
-            IBuzzlingService buzzlingService, SignInManager<User> signInManager)
+            SignInManager<User> signInManager)
         {
             _userService = userService;
             _hiveService = hiveService;
-            _buzzlingService = buzzlingService;
             _signInManager = signInManager;
         }
 
@@ -42,51 +40,25 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeUsername(UpdateUsernameViewModel updateUsernameVM)
         {
-            if (string.IsNullOrWhiteSpace(updateUsernameVM.Username) == false)
+            if (ModelState.IsValid is false)
             {
-                //Check if there's someone already using the provided username
-                if (await _userService.GetByUsernameAsync(updateUsernameVM.Username) is not null)
-                {
-                    ModelState.AddModelError("Username", "This username is already in use.");
-
-                    //I need to pass an extra message that there's already someone with that username...
-                    return View(updateUsernameVM);
-                }
+                return View(updateUsernameVM);
             }
 
-            if (ModelState.IsValid)
+            (IdentityResult result, User? user) = await _userService.ChangeUserNameAsync(User.GetUserId(), updateUsernameVM.Username!);
+
+            if (result.Succeeded is false)
             {
-                User? user = await _userService.GetUserAsync(User);
+                ModelState.AddIdentityErrors(result, "InvalidRegistrationAttempt");
 
-                if(user is not null)
-                {
-                    user.UserName = updateUsernameVM.Username;
-
-                    IdentityResult result = await _userService.UpdateAsync(user);
-
-                    if (result.Succeeded)
-                    {
-                        //Re-sign in the user to update claims in the authentication cookie
-                        //This is so the username change is reflected...
-                        await _signInManager.RefreshSignInAsync(user);
-
-                        return RedirectToAction("UpdateSuccess", "Account");
-                    }
-                    else
-                    {
-                        foreach (IdentityError error in result.Errors)
-                        {
-                            ModelState.AddModelError("InvalidRegistrationAttempt", error.Description);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new NullReferenceException("Couldn't find user.");
-                }
+                return View(updateUsernameVM);
             }
 
-            return View(updateUsernameVM);
+            //Re-sign in the user to update claims in the authentication cookie
+            //This is so the username change is reflected...
+            await _signInManager.RefreshSignInAsync(user!);
+
+            return RedirectToAction("UpdateSuccess", "Account");
         }
 
         [Authorize]
@@ -100,39 +72,28 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(UpdatePasswordViewModel updatePasswordVM)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid is false)
             {
-                User? user = await _userService.GetUserAsync(User);
-
-                if (user is not null)
-                {
-                    IdentityResult result = await _userService.UpdatePasswordAsync(user, updatePasswordVM.CurrentPassword!, updatePasswordVM.NewPassword!);
-
-                    if (result.Succeeded)
-                    {
-                        // Update the security stamp to invalidate existing sessions
-                        await _userService.UpdateSecurityStampAsync(user);
-
-                        //Re-sign in the user to update claims in the authentication cookie
-                        await _signInManager.RefreshSignInAsync(user);
-
-                        return RedirectToAction("UpdateSuccess", "Account");
-                    }
-                    else
-                    {
-                        foreach (IdentityError error in result.Errors)
-                        {
-                            ModelState.AddModelError("InvalidRegistrationAttempt", error.Description);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new NullReferenceException("Couldn't find user.");
-                }
+                return View(updatePasswordVM);
             }
 
-            return View(updatePasswordVM);
+            (IdentityResult result, User? user) = await _userService.UpdateUserPasswordAsync(User.GetUserId(), updatePasswordVM.CurrentPassword!, updatePasswordVM.NewPassword!);
+
+            if (result.Succeeded is false)
+            {
+                ModelState.AddIdentityErrors(result, "InvalidRegistrationAttempt");
+
+                return View(updatePasswordVM);
+            }
+
+            // Update the security stamp to invalidate existing sessions
+            //ACTUALLY, when you change password, this already gets called automatically (supposedly)
+            //await _userService.UpdateSecurityStampAsync(user!);
+
+            //Re-sign in the user to update claims in the authentication cookie
+            await _signInManager.RefreshSignInAsync(user!);
+
+            return RedirectToAction("UpdateSuccess", "Account");
         }
 
         [Authorize]
@@ -146,44 +107,32 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAccountConfirmed()
         {
-            User? user = await _userService.GetUserAsync(User);
+            // Update the security stamp to invalidate existing sessions
+            IdentityResult result = await _userService.UpdateUserSecurityStampAsync(User.GetUserId());
 
-            if (user is not null)
+            if (result.Succeeded is false)
             {
-                if (user.HiveId is not null)
-                {
-                    Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId, "Buzzlings");
-
-                    if (hive is not null)
-                    {
-                        await _hiveService.DeleteAsync(hive);
-                    }
-                }
-
-                var result = await _userService.DeleteAsync(user);
-
-                if (result.Succeeded)
-                {
-                    // Update the security stamp to invalidate existing sessions
-                    await _userService.UpdateSecurityStampAsync(user);
-
-                    await _signInManager.SignOutAsync();
-
-                    return RedirectToAction("DeleteAccountSuccess", "Account");
-                }
-            }
-            else
-            {
-                throw new NullReferenceException("Couldn't find user.");
+                ModelState.AddIdentityErrors(result.Errors, string.Empty);
+                return View();
             }
 
-            return View();
+            await _signInManager.SignOutAsync();
+
+            result = await _userService.DeleteUserAsync(User.GetUserId());
+
+            if (result.Succeeded is false)
+            {
+                ModelState.AddIdentityErrors(result.Errors, string.Empty);
+                return View();
+            }
+
+            return RedirectToAction("DeleteAccountSuccess", "Account");
         }
 
         [Authorize]
         public async Task<IActionResult> ChangeHiveName()
         {
-            User? user = await _userService.GetUserAsync(User);
+            User? user = await _userService.GetUserByIdAsync(User.GetUserId());
 
             UpdateHiveNameViewModel updateHiveNameVM = new UpdateHiveNameViewModel { User = user };
 
@@ -195,38 +144,36 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeHiveName(UpdateHiveNameViewModel updateHiveNameVM)
         {
-            User? user = await _userService.GetUserAsync(User);
+            if (ModelState.IsValid is false)
+            {
+                return View(updateHiveNameVM);
+            }
+
+            User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true);
+
+            if (user is null)
+            {
+                ModelState.AddModelError(string.Empty, "Couldn't find user.");
+                return View(updateHiveNameVM);
+            }
 
             updateHiveNameVM.User = user;
 
-            if (ModelState.IsValid)
+            if (user.Hive is null)
             {
-                if (user is not null)
-                {
-                    if (user.HiveId is not null)
-                    {
-                        Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId);
-
-                        hive!.Name = updateHiveNameVM.HiveName;
-
-                        await _hiveService.UpdateAsync(hive);
-
-                        return RedirectToAction("UpdateSuccess", "Account");
-                    }
-                }
-                else
-                {
-                    throw new NullReferenceException("Couldn't find user.");
-                }
+                ModelState.AddModelError(string.Empty, "User doesn't have a hive.");
+                return View(updateHiveNameVM);
             }
 
-            return View(updateHiveNameVM);
+            await _hiveService.UpdateHiveNameAsync(user.Hive, updateHiveNameVM.HiveName!);
+
+            return RedirectToAction("UpdateSuccess", "Account");
         }
 
         [Authorize]
         public async Task<IActionResult> DeleteHive()
         {
-            User? user = await _userService.GetUserAsync(User);
+            User? user = await _userService.GetUserByIdAsync(User.GetUserId());
 
             return View(user);
         }
@@ -236,28 +183,23 @@ namespace Buzzlings.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteHiveConfirmed()
         {
-            User? user = await _userService.GetUserAsync(User);
+            User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true);
 
-            if (user is not null)
+            if (user is null)
             {
-                if (user.HiveId is not null)
-                {
-                    Hive? hive = await _hiveService.GetAsync(h => h.Id == user.HiveId);
-
-                    if (hive is not null)
-                    {
-                        await _hiveService.DeleteAsync(hive);
-
-                        return RedirectToAction("DeleteHiveSuccess", "Account");
-                    }
-                }
-            }
-            else
-            {
-                throw new NullReferenceException("Couldn't find user.");
+                ModelState.AddModelError(string.Empty, "User not found.");
+                return View();
             }
 
-            return View();
+            if (user.Hive is null)
+            {
+                ModelState.AddModelError(string.Empty, "User doesn't have a hive.");
+                return View();
+            }
+
+            await _hiveService.DeleteHiveAsync(user.Hive);
+
+            return RedirectToAction("DeleteHiveSuccess", "Account");
         }
 
         [Authorize]

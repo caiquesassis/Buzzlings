@@ -19,20 +19,17 @@ namespace Buzzlings.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserDto createUserDto)
         {
-            User user = new User()
-            {
-                UserName = createUserDto.Username
-            };
+            await _userService.RegisterNewUserAsync(createUserDto.Username, createUserDto.Password);
 
-            await _userService.CreateAsync(user, createUserDto.Password);
+            User? user = await _userService.GetUserByUserNameAsync(createUserDto.Username);
 
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+            return CreatedAtAction(nameof(GetUserById), new { id = user!.Id }, user);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            IEnumerable<User> users = await _userService.GetAllAsync();
+            IEnumerable<User> users = await _userService.GetAllUsersAsync();
 
             return Ok(users);
         }
@@ -41,7 +38,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            User? user = await _userService.GetByIdAsync(id);
+            User? user = await _userService.GetUserByIdAsync(id.ToString());
 
             if(user is null)
             {
@@ -55,7 +52,7 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> UpdateUser(int id, UpdateUserDto updateUserDto)
         {
-            User? user = await _userService.GetByIdAsync(id);
+            User? user = await _userService.GetUserByIdAsync(id.ToString());
 
             if (user is null)
             {
@@ -64,7 +61,7 @@ namespace Buzzlings.Api.Controllers
 
             user.UserName = updateUserDto.Username;
 
-            await _userService.UpdateAsync(user);
+            await _userService.UpdateUserAsync(user);
 
             return Ok(user);
         }
@@ -73,14 +70,14 @@ namespace Buzzlings.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            User? user = await _userService.GetByIdAsync(id);
+            User? user = await _userService.GetUserByIdAsync(id.ToString());
 
             if (user is null)
             {
                 return NotFound();
             }
 
-            await _userService.DeleteAsync(user);
+            await _userService.DeleteUserAsync(user.Id.ToString());
 
             return Ok();
         }

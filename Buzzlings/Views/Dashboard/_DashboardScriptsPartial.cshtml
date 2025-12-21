@@ -2,6 +2,7 @@
     let lastLogIndex = 0;
     let hiveAge = @Model.User?.Hive?.Age;
     let happinessIntervalId;
+    let ageIntervalId;
     const happinessIntervalTimer = 6000;
     const ageIntervalTimer = 6000;
 
@@ -15,6 +16,9 @@
                 data: { query: searchTerm },
                 success: function (data) {
                     document.getElementById("buzzlingsTable").innerHTML = data;
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error filtering buzzlings table: ", error);
                 }
             });
         });
@@ -29,6 +33,9 @@
                 if(document.getElementById("searchInput").value.length === 0) {
                     document.getElementById("buzzlingsTable").innerHTML = data;
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error refreshing buzzlings table: ", error);
             }
         });
     }
@@ -49,7 +56,7 @@
         $.ajax({
             url: "@Url.Action("GetEventLog", "Dashboard")",
             type: "GET",
-            data: { lastLogIndex: lastLogIndex },  // Send the index of the last log entry
+            data: { lastLogIndex: lastLogIndex },
             success: function(data) {
                 if (data && data.log && data.log.length > 0) {
                     data.log.forEach(logMessage => {
@@ -72,6 +79,9 @@
             success: function (data) {
                 hiveAge = data.age;
                 document.getElementById("hiveAge").innerHTML = "Age: " + data.age;
+            },
+            error: function(xhr, status, error) {
+                console.error("Error updating hive age: ", error);
             }
         });
     }
@@ -91,8 +101,8 @@
     $(document).ready(function() {
         fetchLatestLogs();
         filterBuzzlingsTable();
-        setInterval(updateHiveAge, ageIntervalTimer);
-        setInterval(updateHiveHappiness, happinessIntervalTimer);
+        ageIntervalId = setInterval(updateHiveAge, ageIntervalTimer);
+        happinessIntervalId = setInterval(updateHiveHappiness, happinessIntervalTimer);
     });
 
 </script>
