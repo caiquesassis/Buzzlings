@@ -34,14 +34,16 @@
                         <b>🍯 @Model.User?.Hive?.Name 🍯</b>
                         <br />
                         <b id="hiveAge">Age: @Model.User?.Hive?.Age</b>
-                        @if (Model.User?.Hive?.Age != 1)
-                        {
-                            <b> days old | </b>
-                        }
-                        else
-                        {
-                            <b> day old | </b>
-                        }
+                        <span id="hiveAgeDescription">
+                            @if (Model.User?.Hive?.Age != 1)
+                            {
+                                <b> days old | </b>
+                            }
+                            else
+                            {
+                                <b> day old | </b>
+                            }
+                        </span>
                         <b id="hiveHappiness">Happiness: @Model.User?.Hive?.Happiness%</b>
                     </div>
                 </div>

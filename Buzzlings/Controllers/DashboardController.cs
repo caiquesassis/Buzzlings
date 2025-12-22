@@ -1,6 +1,7 @@
 ﻿using Buzzlings.BusinessLogic.Dtos;
 using Buzzlings.BusinessLogic.Services.Buzzling;
 using Buzzlings.BusinessLogic.Services.Hive;
+using Buzzlings.BusinessLogic.Services.Simulation;
 using Buzzlings.BusinessLogic.Services.User;
 using Buzzlings.BusinessLogic.Simulation;
 using Buzzlings.BusinessLogic.Utils;
@@ -20,29 +21,27 @@ namespace Buzzlings.Web.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
+        private readonly ISimulationService _simulationService;
         private readonly IUserService _userService;
         private readonly IHiveService _hiveService;
         private readonly IBuzzlingService _buzzlingService;
         private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly SimulationEventHandler _simulationEventHandler;
-
         private const string IgnoreHiveNameValidation = "IgnoreHiveNameValidation";
         private const string IgnoreBuzzlingNameValidation = "IgnoreBuzzlingNameValidation";
         private const string IsUpdateAttempt = "IsUpdateAttempt";
 
-        public DashboardController(IUserService userService,
+        public DashboardController(ISimulationService simulationService, IUserService userService,
             IHiveService hiveService, IBuzzlingService buzzlingService,
             SignInManager<User> signInManager, IUnitOfWork unitOfWork)
         {
+            _simulationService = simulationService;
             _userService = userService;
             _hiveService = hiveService;
             _buzzlingService = buzzlingService;
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
-
-            _simulationEventHandler = new SimulationEventHandler();
         }
 
         public async Task<IActionResult> Index(DashboardViewModel dashboardVM)
@@ -157,97 +156,17 @@ namespace Buzzlings.Web.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
-        public async Task<IActionResult> UpdateHiveHappiness()
+        public async Task<IActionResult> UpdateHiveStatus()
         {
-            User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true, true, true);
+            int age = await _simulationService.IncrementHiveAge(User.GetUserId());
+            int happiness = await _simulationService.ProcessSimulationAsync(User.GetUserId());
 
-            if (user is null || user.Hive is null)
-            {
-                return Json(new { happiness = 0 });
-            }
-
-            SimulationEventDto simulationEvent =
-                _simulationEventHandler.GenerateEvent(
-                    user.Hive.Buzzlings is not null ? user.Hive.Buzzlings.ToList() : new List<Buzzling>(),
-                    user.Hive.EventLog?.Last());
-
-            if (user.Hive.Buzzlings is not null)
-            {
-                if (simulationEvent.buzzlingsToDelete > 0)
-                {
-                    List<Buzzling> buzzlingsToDelete = new List<Buzzling>();
-
-                    for (int i = 0; i < simulationEvent.buzzlingsToDelete; i++)
-                    {
-                        Buzzling b = user.Hive.Buzzlings.ElementAt(RandomUtils.GetRandomRangeValue(0, user.Hive.Buzzlings.Count - 1));
-
-                        buzzlingsToDelete.Add(b);
-
-                        user.Hive.Buzzlings.Remove(b);
-                    }
-
-                    // This prevents the SaveAsync inside DeleteBuzzlingsRangeAsync from crashing
-                    _unitOfWork.DetachRange(buzzlingsToDelete);
-
-                    await _buzzlingService.DeleteBuzzlingsRangeAsync(buzzlingsToDelete);
-
-                    await _hiveService.UpdateHiveAsync(user.Hive);
-                }
-            }
-
-            user.Hive.Happiness += simulationEvent.happinessImpact;
-            //hive.Happiness -= 50;
-            user.Hive.Happiness = Math.Clamp(user.Hive.Happiness!.Value, 0, 100);
-
-            user.Hive.EventLog?.Add(simulationEvent.log);
-
-            await _hiveService.UpdateHiveAsync(user.Hive);
-
-            Console.WriteLine("HAPPINESS UPDATED.");
-
-            return Json(new { happiness = user.Hive.Happiness });
-        }
-
-        public async Task<IActionResult> UpdateHiveAge()
-        {
-            User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true);
-
-            if (user is null || user.Hive is null)
-            {
-                return Json(new { age = 0 });
-            }
-
-            if (user.Hive!.Happiness > 0)
-            {
-                user.Hive.Age++;
-            }
-
-            await _hiveService.UpdateHiveAsync(user.Hive);
-
-            return Json(new { age = user.Hive.Age });
+            return Json(new { happiness, age });
         }
 
         public async Task<IActionResult> GetEventLog(int lastLogIndex = 0)
         {
-            User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true);
-
-            if (user is null || user.Hive is null)
-            {
-                return Json(new { log = new List<string>() });
-            }
-
-            if (user.Hive.EventLog is null)
-            {
-                user.Hive.EventLog = ["🍯 " + user.Hive.Name + " 🍯 is born!"];
-
-                await _hiveService.UpdateHiveAsync(user.Hive);
-            }
-
-            List<string> newLogs = user.Hive.EventLog.Skip(lastLogIndex).ToList();
-
-            int updatedLogIndex = user.Hive.EventLog.Count;
-
-            Console.WriteLine("LOGS FETCHED.");
+            var (newLogs, updatedLogIndex) = await _simulationService.GetLatestEventLogs(User.GetUserId(), lastLogIndex);
 
             return Json(new { log = newLogs, lastLogIndex = updatedLogIndex });
         }

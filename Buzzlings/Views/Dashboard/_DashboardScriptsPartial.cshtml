@@ -1,10 +1,7 @@
 ﻿<script>
     let lastLogIndex = 0;
     let hiveAge = @Model.User?.Hive?.Age;
-    let happinessIntervalId;
-    let ageIntervalId;
-    const happinessIntervalTimer = 6000;
-    const ageIntervalTimer = 6000;
+    const statusIntervalTimer = 6000;
 
     function filterBuzzlingsTable() {
         document.getElementById("searchInput").addEventListener("input", function () {
@@ -72,37 +69,48 @@
         });
     }
 
-    function updateHiveAge() {
+    function updateHiveStatus() {
         $.ajax({
-            url: "@Url.Action("UpdateHiveAge", "Dashboard")",
-            type: "GET",
-            success: function (data) {
-                hiveAge = data.age;
-                document.getElementById("hiveAge").innerHTML = "Age: " + data.age;
-            },
-            error: function(xhr, status, error) {
-                console.error("Error updating hive age: ", error);
-            }
-        });
-    }
-
-    function updateHiveHappiness() {
-        $.ajax({
-            url: "@Url.Action("UpdateHiveHappiness", "Dashboard")",
+            url: "@Url.Action("UpdateHiveStatus", "Dashboard")",
             type: "GET",
             success: function (data) {
                 fetchLatestLogs();
                 refreshBuzzlingsTable();
                 document.getElementById("hiveHappiness").innerHTML = "Happiness: " + data.happiness + "%";
+                document.getElementById("hiveAge").innerHTML = "Age: " + data.age;
+                document.getElementById("hiveAgeDescription").innerHTML = data.age !== 1 ? "<b> days old | </b>" : "<b> day old | </b>";
+
+                if(data.happiness <= 0) {
+                    handleSimulationFailure();
+                } else {
+                    //Schedule the next update ONLY after this one is done
+                    //This prevents syncing errors that happen with setInterval
+                    setTimeout(updateHiveStatus, statusIntervalTimer);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error updating hive status: ", error);
             }
+        });
+    }
+
+    function handleSimulationFailure() {
+        clearInterval(happinessIntervalId);
+        clearInterval(ageIntervalId);
+
+        document.getElementById("overlay-panel").classList.add("show");
+        document.body.classList.add("no-scroll");
+
+        $.ajax({
+            url: "@Url.Action("DeleteHiveOnSimulationEnd", "Dashboard")",
+            type: "POST"
         });
     }
 
     $(document).ready(function() {
         fetchLatestLogs();
         filterBuzzlingsTable();
-        ageIntervalId = setInterval(updateHiveAge, ageIntervalTimer);
-        happinessIntervalId = setInterval(updateHiveHappiness, happinessIntervalTimer);
+        setTimeout(updateHiveStatus, statusIntervalTimer);
     });
 
 </script>

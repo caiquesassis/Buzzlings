@@ -78,6 +78,12 @@ namespace Buzzlings.BusinessLogic.Services.Hive
         public async Task UpdateHiveNameAsync(Data.Models.Hive hive, string newName)
         {
             hive.Name = newName;
+
+            if (hive.EventLog is not null)
+            {
+                hive.EventLog[0] = "🍯 " + hive.Name + " 🍯 is born!";
+            }
+
             await UpdateHiveAsync(hive);
         }
 

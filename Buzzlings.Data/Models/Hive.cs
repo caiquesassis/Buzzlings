@@ -12,6 +12,6 @@ namespace Buzzlings.Data.Models
         [Range(0, 100)]
         public int? Happiness { get; set; } = 100;
         public ICollection<Buzzling>? Buzzlings { get; set; }
-        public ICollection<string>? EventLog { get; set; }
+        public List<string>? EventLog { get; set; }
     }
 }
