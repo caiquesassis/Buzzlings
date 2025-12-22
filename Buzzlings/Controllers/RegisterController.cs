@@ -34,8 +34,8 @@ namespace Buzzlings.Web.Controllers
 
             if (result.Succeeded is false)
             {
-                ModelState.AddIdentityErrors(result.Errors.Where(e => e.Code is "DuplicateUsername"), "Username");
-                ModelState.AddIdentityErrors(result.Errors.Where(e => e.Code is not "DuplicateUsername"), "InvalidRegistrationAttempt");
+                ModelState.AddIdentityErrors(result.Errors.Where(e => e.Code is "DuplicateUserName"), "Username");
+                ModelState.AddIdentityErrors(result.Errors.Where(e => e.Code is not "DuplicateUserName"), "InvalidRegistrationAttempt");
 
                 return View(registerVM);
             }
