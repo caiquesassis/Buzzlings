@@ -255,8 +255,6 @@ namespace Buzzlings.BusinessLogic.Simulation
 
             happinessImpact = Math.Clamp(happinessImpact, HappinessImpactMinValue, HappinessImpactMaxValue);
 
-            Console.WriteLine("AGGREGATE MOOD CHANGE: " + aggregateMoodChange + "\nHAPPINESS IMPACT: " + happinessImpact + "\n=============================================================");
-
             return happinessImpact;
         }
 
