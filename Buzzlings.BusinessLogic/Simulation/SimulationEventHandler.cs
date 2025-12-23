@@ -3,6 +3,7 @@ using Buzzlings.BusinessLogic.Models.Enums;
 using Buzzlings.BusinessLogic.Utils;
 using Buzzlings.Data.Constants;
 using Buzzlings.Data.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Buzzlings.BusinessLogic.Simulation
 {
@@ -30,7 +31,9 @@ namespace Buzzlings.BusinessLogic.Simulation
             int buzzlingsToDelete = 0;
             SimulationTopEventType eventType = SimulationTopEventType.Decoration;
 
-            while (eventLog is null || eventLog.Equals(lastEventLog))
+            while (eventLog is null || eventLog.Equals(lastEventLog) ||
+                (eventType is SimulationTopEventType.Decoration && buzzlings.IsNullOrEmpty())
+                )
             {
                 (eventLog, buzzlingsToDelete, eventType) = GenerateEventLog(buzzlings, ref aggregateMoodChange);
             }
