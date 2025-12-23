@@ -202,11 +202,11 @@ namespace Buzzlings.BusinessLogic.Simulation
 
         private static readonly List<string> SingleBuzzlingMoodLogs = new List<string>
         {
-            "'s bad mood spread. Some fled to escape.",
-            "’s frustration made others uneasy. Some fled.",
-            "’s anger caused unrest. Some fled the hive.",
-            "’s low spirits spread. Some fled to avoid conflict.",
-            "’s mood soured. Some fled the hive."
+            "'s bad mood spread. Some became nervous.",
+            "’s frustration made others uneasy.",
+            "’s anger caused unrest. Conflicts are rising.",
+            "’s low spirits spread. Some distanced to avoid conflict.",
+            "’s mood soured. It's affecting some in the hive."
         };
 
         public static readonly List<string> DecorationLogs = new List<string>
