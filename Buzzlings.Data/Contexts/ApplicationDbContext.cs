@@ -11,6 +11,7 @@ namespace Buzzlings.Data.Contexts
         public DbSet<User> ApplicationUsers { get; set; }
         public DbSet<Hive> Hives { get; set; }
         public DbSet<Buzzling> Buzzlings { get; set; }
+        public DbSet<TopHive> TopHives { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -11,6 +11,7 @@ namespace Buzzlings.Data.Repositories
         public IHiveRepository HiveRepository { get; private set; }
         public IBuzzlingRepository BuzzlingRepository { get; private set; }
         public IBuzzlingRoleRepository BuzzlingRoleRepository { get; private set; }
+        public ITopHiveRepository TopHiveRepository { get; private set; }
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
@@ -18,6 +19,7 @@ namespace Buzzlings.Data.Repositories
             HiveRepository = new HiveRepository(_dbContext);
             BuzzlingRepository = new BuzzlingRepository(_dbContext);
             BuzzlingRoleRepository = new BuzzlingRoleRepository(_dbContext);
+            TopHiveRepository = new TopHiveRepository(_dbContext);
         }
 
         public async Task SaveAsync()

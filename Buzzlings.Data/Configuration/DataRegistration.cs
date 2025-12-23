@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IHiveRepository, HiveRepository>();
             services.AddScoped<IBuzzlingRepository, BuzzlingRepository>();
             services.AddScoped<IBuzzlingRoleRepository, BuzzlingRoleRepository>();
+            services.AddScoped<ITopHiveRepository, TopHiveRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
