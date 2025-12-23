@@ -6,22 +6,29 @@
     <div class="text-center">
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
             <div class="card custom-panel" style="width: 100%;">
-                <div class="card-body p-3">
-                    <div class="text-center">
-                        <b>Are you sure you want to delete your account?</b>
-                    </div>
+                <div class="card-body p-1">
+                    <b>Delete account</b>
                 </div>
             </div>
         </div>
-        <form method="post" asp-controller="Account" asp-action="DeleteAccount">
-            <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-                <div class="card custom-panel" style="width: 100%;">
-                    <div class="card-body p-3">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                        <a asp-controller="Account" asp-action="Back" class="btn btn-dark w-48">Back</a>
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-3">
+                    <div class="text-center mb-3">
+                        Are you sure you want to delete your account?
                     </div>
+                    <form method="post" asp-controller="Account" asp-action="DeleteAccount">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <a asp-controller="Account" asp-action="Back" class="btn btn-dark w-48">Back</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
