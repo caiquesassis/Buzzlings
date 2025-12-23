@@ -5,6 +5,8 @@
 
 @model Buzzlings.Web.Models.UpdateUsernameViewModel
 
+@Html.AntiForgeryToken() <!-- CSRF protection -->
+
 <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="text-center">
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
@@ -18,8 +20,6 @@
             <div class="card custom-panel" style="max-width: 400px; width: 100%; margin: auto;">
                 <div class="card-body p-3">
                     <form method="post" asp-controller="Account" asp-action="ChangeUsername">
-                        @Html.AntiForgeryToken() <!-- CSRF protection -->
-
                         <div class="mb-3">
                             <label asp-for="Username" class="form-label"><b>New username</b></label>
                             <input asp-for="Username" type="text" class="form-control" id="username" placeholder="Enter your new username" />

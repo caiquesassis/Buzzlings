@@ -5,6 +5,8 @@
 
 @model Buzzlings.Web.Models.UpdateHiveNameViewModel
 
+@Html.AntiForgeryToken() <!-- CSRF protection -->
+
 <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="text-center">
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
@@ -20,8 +22,6 @@
                 <div class="card custom-panel" style="max-width: 400px; width: 100%; margin: auto;">
                     <div class="card-body p-3">
                         <form method="post" asp-controller="Account" asp-action="ChangeHiveName">
-                            @Html.AntiForgeryToken() <!-- CSRF protection -->
-
                             <div class="mb-3">
                                 <label asp-for="HiveName" class="form-label"><b>New hive name</b></label>
                                 <input asp-for="HiveName" type="text" class="form-control" id="hivename" placeholder="Enter the new hive name" />
