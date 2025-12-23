@@ -201,9 +201,20 @@ namespace Buzzlings.Web.Controllers
             return PartialView("_BuzzlingsTablePartial", buzzlings);
         }
 
-        public void DeleteHiveOnSimulationEnd()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FinalizeHive()
         {
+            User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true);
 
+            if (user?.Hive is null)
+            {
+                return BadRequest("User doesn't have a hive.");
+            }
+
+            await _hiveService.DeleteHiveAsync(user.Hive);
+
+            return Ok();
         }
 
         public async Task<IActionResult> LogOut()

@@ -1,22 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
@@ -25,12 +25,12 @@ body {
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
 }
 
 /* Custom styling for the panel ======================= */
@@ -59,6 +59,10 @@ html, body {
     margin: 0;
     padding: 0;
 }
+
+    body.no-scroll {
+        overflow: hidden; /* Prevent scrolling */
+    }
 
 .container {
     display: flex;
@@ -133,24 +137,45 @@ html, body {
     font-size: 14px;
 }
 
-.fixed-table th {
-    padding: 5px 10px;
-    color: #fff;
-    background-color: #212529;
-    font-weight: bold;
-    position: sticky;
+    .fixed-table th {
+        padding: 5px 10px;
+        color: #fff;
+        background-color: #212529;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .fixed-table td {
+        padding: 5px 10px;
+    }
+
+    .fixed-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .fixed-table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+/* Simulation failure overlays  =================================== */
+
+#overlay-panel {
+    position: fixed;
     top: 0;
-    z-index: 1;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none; /* Blocks interaction with elements below */
+    z-index: 9999; /* Ensure it's above everything */
+    transition: opacity 0.5s ease;
 }
 
-.fixed-table td {
-    padding: 5px 10px;
-}
+    #overlay-panel.show {
+        opacity: 1;
+        pointer-events: all; /* Allow interaction with elements above */
+    }
 
-.fixed-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.fixed-table tr:nth-child(odd) {
-    background-color: #ffffff;
-}
