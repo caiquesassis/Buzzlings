@@ -2,6 +2,7 @@
 using Buzzlings.BusinessLogic.Services.Buzzling;
 using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.Simulation;
+using Buzzlings.BusinessLogic.Services.TopHive;
 using Buzzlings.BusinessLogic.Services.User;
 using Buzzlings.BusinessLogic.Simulation;
 using Buzzlings.BusinessLogic.Utils;
@@ -25,6 +26,7 @@ namespace Buzzlings.Web.Controllers
         private readonly IUserService _userService;
         private readonly IHiveService _hiveService;
         private readonly IBuzzlingService _buzzlingService;
+        private readonly ITopHiveService _topHiveService;
         private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -33,13 +35,14 @@ namespace Buzzlings.Web.Controllers
         private const string IsUpdateAttempt = "IsUpdateAttempt";
 
         public DashboardController(ISimulationService simulationService, IUserService userService,
-            IHiveService hiveService, IBuzzlingService buzzlingService,
+            IHiveService hiveService, IBuzzlingService buzzlingService, ITopHiveService topHiveService,
             SignInManager<User> signInManager, IUnitOfWork unitOfWork)
         {
             _simulationService = simulationService;
             _userService = userService;
             _hiveService = hiveService;
             _buzzlingService = buzzlingService;
+            _topHiveService = topHiveService;
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
         }
@@ -211,6 +214,8 @@ namespace Buzzlings.Web.Controllers
             {
                 return BadRequest("User doesn't have a hive.");
             }
+
+            await _topHiveService.AddTopHiveAsync(user.Id, user.Hive.Name!, user.Hive.Age!.Value);
 
             await _hiveService.DeleteHiveAsync(user.Hive);
 

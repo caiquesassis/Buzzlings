@@ -31,8 +31,8 @@ namespace Buzzlings.Data.Contexts
             //This is needed when deleting async only, otherwise EFC takes care of it itself...
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Hive) //Can't use .HasOne<Hive>() as it'll create a new field in the table
-                .WithMany()
-                .HasForeignKey(u => u.HiveId)
+                .WithOne() //1:1 relationship with Hive
+                .HasForeignKey<User>(u => u.HiveId) //1:1 requires the generic type here (<User>) - in a 1:1 relationship, EF Core needs to know which table "holds" the foreign key
                 .OnDelete(DeleteBehavior.SetNull);
 
             //When a Hive is deleted, we should delete all of its Buzllings too
@@ -41,7 +41,13 @@ namespace Buzzlings.Data.Contexts
                 .WithMany(h => h.Buzzlings)
                 .HasForeignKey(b => b.HiveId)
                 .OnDelete(DeleteBehavior.Cascade);
-        }
 
+            //Delete the TopHive entries of a given User if they delete their account
+            modelBuilder.Entity<TopHive>()
+                .HasOne(h => h.User)
+                .WithMany() //A User can have many TopHive entries
+                .HasForeignKey(h => h.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
