@@ -24,13 +24,23 @@
                     <div style="width: 48%;">
                         <label asp-for="BuzzlingRole" class="form-label"><b>Role</b></label>
                         <select asp-for="BuzzlingRole" class="form-select">
-                            @foreach (var role in rolesSelectList)
+                            @foreach (var role in rolesSelectList!)
                             {
                                 <option value="@role.Value">@role.Text</option>
                             }
                         </select>
                     </div>
                 </div>
+                <!--
+                    When your method accepts a complex object, the binder looks at the Form Body
+                    to fill the properties. It does not automatically look at the URL to fill
+                    properties inside a complex object. That's why using asp-route-id here is not
+                    enough - we need a hidden input field (the method expects a DashboardViewModel only).
+                    I could remove this hidden input if I placed an int id parameter in the UpdateBuzzling
+                    POST method, but then I'd also need to place it into the DashboardVM inside the method
+                    anyway, since if validation fails, I just return a View with a DashboardVM object,
+                    not an id...but then I'd be able to just use asp-route-id
+                -->
                 <input type="hidden" asp-for="BuzzlingId" />
                 <button type="submit" class="btn btn-dark">Update</button>
                 <a asp-controller="Dashboard" asp-action="Index" class="btn btn-dark w-48">Cancel</a>

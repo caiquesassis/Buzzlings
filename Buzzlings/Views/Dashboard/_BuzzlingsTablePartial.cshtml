@@ -37,15 +37,13 @@
                         <td style="font-size:28px;">@moodEmoji</td>
                     }
                     <td>
-                        <form asp-controller="Dashboard" asp-action="UpdateBuzzling" method="get">
-                            <input type="hidden" name="id" value="@buzzling.Id" />
-                            <button type="submit" class="tablebutton">🖊️</button>
-                        </form>
+                        <!-- Use <a> instead of form for GET. Take advantage of the default routing /Controller/Action/ID -->
+                        <a asp-controller="Dashboard" asp-action="UpdateBuzzling" asp-route-id="@buzzling.Id" class="btn btn-sm btn-table">🖊️</a>
                     </td>
                     <td>
-                        <form asp-controller="Dashboard" asp-action="DeleteBuzzling" method="post">
-                            <input type="hidden" name="id" value="@buzzling.Id" />
-                            <button type="submit" class="tablebutton">❌</button>
+                        <!-- Using asp-route-id instead of a hidden input to take advantage of the default routing /Controller/Action/ID -->
+                        <form asp-controller="Dashboard" asp-action="DeleteBuzzling" asp-route-id="@buzzling.Id" method="post">
+                            <button type="submit" class="btn btn-sm btn-table">❌</button>
                         </form>
                     </td>
                 </tr>

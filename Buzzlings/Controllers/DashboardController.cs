@@ -148,7 +148,7 @@ namespace Buzzlings.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteBuzzling(DashboardViewModel dashboardVM, int id)
+        public async Task<IActionResult> DeleteBuzzling(int id, DashboardViewModel dashboardVM)
         {
             await PrepareDashboardViewModel(dashboardVM);
 

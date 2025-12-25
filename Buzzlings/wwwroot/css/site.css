@@ -159,6 +159,22 @@ html, body {
         background-color: #ffffff;
     }
 
+.btn-table {
+    --bs-btn-bg: #E9E9ED;
+    --bs-btn-border-color: #8F8F9D;
+    --bs-btn-hover-bg: #D0D0D7;
+    --bs-btn-hover-border-color: #676774;
+    --bs-btn-color: #212529;
+    /* Apply the base border */
+    border: 2px solid var(--bs-btn-border-color) !important;
+}
+
+    .btn-table:hover {
+        /* Manually force the border to use the hover variable */
+        border-color: var(--bs-btn-hover-border-color) !important;
+        background-color: var(--bs-btn-hover-bg) !important;
+    }
+
 /* Simulation failure overlays  =================================== */
 
 #overlay-panel {

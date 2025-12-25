@@ -24,7 +24,7 @@
                     <div style="width: 48%;">
                         <label asp-for="BuzzlingRole" class="form-label"><b>Role</b></label>
                         <select asp-for="BuzzlingRole" class="form-select">
-                            @foreach (var role in rolesSelectList)
+                            @foreach (var role in rolesSelectList!)
                             {
                                 <option value="@role.Value">@role.Text</option>
                             }
