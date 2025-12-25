@@ -21,13 +21,14 @@ namespace Buzzlings.Web.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToAction(nameof(DashboardController.Index), "Dashboard");
             }
 
             return View();
         }
 
-        [HttpPost]
+        //Map the URL to /LogIn instead of /LogIn/LogIn
+        [HttpPost("[controller]"), ActionName("LogIn")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn(LogInViewModel logInVM)
         {

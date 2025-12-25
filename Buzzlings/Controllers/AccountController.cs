@@ -58,7 +58,7 @@ namespace Buzzlings.Web.Controllers
             //This is so the username change is reflected...
             await _signInManager.RefreshSignInAsync(user!);
 
-            return RedirectToAction("UpdateSuccess", "Account");
+            return RedirectToAction(nameof(UpdateSuccess));
         }
 
         [Authorize]
@@ -93,7 +93,7 @@ namespace Buzzlings.Web.Controllers
             //Re-sign in the user to update claims in the authentication cookie
             await _signInManager.RefreshSignInAsync(user!);
 
-            return RedirectToAction("UpdateSuccess", "Account");
+            return RedirectToAction(nameof(UpdateSuccess));
         }
 
         [Authorize]
@@ -126,7 +126,7 @@ namespace Buzzlings.Web.Controllers
                 return View();
             }
 
-            return RedirectToAction("DeleteAccountSuccess", "Account");
+            return RedirectToAction(nameof(DeleteAccountSuccess));
         }
 
         [Authorize]
@@ -167,7 +167,7 @@ namespace Buzzlings.Web.Controllers
 
             await _hiveService.UpdateHiveNameAsync(user.Hive, updateHiveNameVM.HiveName!);
 
-            return RedirectToAction("UpdateSuccess", "Account");
+            return RedirectToAction(nameof(UpdateSuccess));
         }
 
         [Authorize]
@@ -199,7 +199,7 @@ namespace Buzzlings.Web.Controllers
 
             await _hiveService.DeleteHiveAsync(user.Hive);
 
-            return RedirectToAction("DeleteHiveSuccess", "Account");
+            return RedirectToAction(nameof(DeleteHiveSuccess));
         }
 
         [Authorize]

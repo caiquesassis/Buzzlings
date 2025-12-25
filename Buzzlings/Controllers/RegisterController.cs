@@ -20,7 +20,8 @@ namespace Buzzlings.Web.Controllers
             return View();
         }
 
-        [HttpPost]
+        //Map the URL to /Register instead of /Register/Register
+        [HttpPost("[controller]"), ActionName("Register")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
@@ -39,10 +40,10 @@ namespace Buzzlings.Web.Controllers
                 return View("Index", registerVM);
             }
 
-            return RedirectToAction(nameof(RegisterSuccess));
+            return RedirectToAction(nameof(Success));
         }
 
-        public IActionResult RegisterSuccess()
+        public IActionResult Success()
         {
             return View();
         }
