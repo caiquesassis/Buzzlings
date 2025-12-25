@@ -9,11 +9,23 @@ namespace Buzzlings.Data.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
 
-        private const int TableBufferSize = 3;
+        private const int TableBufferSize = 20;
 
         public TopHiveRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<IEnumerable<TopHive>?> GetTopHivesAsync()
+        {
+            IEnumerable<TopHive> topHives = await _dbContext.TopHives
+                .Include(h => h.User)
+                .OrderByDescending(h => h.HiveAge)
+                .ThenBy(h => h.Id)
+                .Take(10) //Even if you store 20, you can choose to only show 10
+                .ToListAsync();
+
+            return topHives;
         }
 
         public async Task TrimTopHiveEntriesAsync()

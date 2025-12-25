@@ -22,7 +22,7 @@ namespace Buzzlings.Controllers
 
         public IActionResult TopHives()
         {
-            return View();
+            return RedirectToAction("TopHives", "TopHives");
         }
 
         public IActionResult About()

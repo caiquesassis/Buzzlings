@@ -31,9 +31,9 @@ namespace Buzzlings.BusinessLogic.Services.TopHive
             await _unitOfWork.TopHiveRepository.TrimTopHiveEntriesAsync();
         }
 
-        public async Task<IEnumerable<Data.Models.TopHive?>> GetAllTopHivesAsync()
+        public async Task<IEnumerable<Data.Models.TopHive>?> GetTopHivesAsync()
         {
-            return await _unitOfWork.TopHiveRepository.GetAllAsync("User");
+            return await _unitOfWork.TopHiveRepository.GetTopHivesAsync();
         }
 
         public async Task DeleteTopHivesRangeAsync(ICollection<Data.Models.TopHive> topHives)
