@@ -8,10 +8,5 @@ namespace Buzzlings.Web.Controllers
         {
             return View();
         }
-
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index", "Home");
-        }
     }
 }

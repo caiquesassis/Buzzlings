@@ -1,5 +1,4 @@
 ﻿using Buzzlings.BusinessLogic.Services.User;
-using Buzzlings.Data.Models;
 using Buzzlings.Web.Extensions;
 using Buzzlings.Web.Models;
 using Microsoft.AspNetCore.Identity;
@@ -40,17 +39,12 @@ namespace Buzzlings.Web.Controllers
                 return View("Index", registerVM);
             }
 
-            return RedirectToAction("RegisterSuccess", "Register");
+            return RedirectToAction(nameof(RegisterSuccess));
         }
 
         public IActionResult RegisterSuccess()
         {
             return View();
-        }
-
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index", "Home");
         }
     }
 }

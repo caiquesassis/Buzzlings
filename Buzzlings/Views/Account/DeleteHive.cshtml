@@ -1,20 +1,20 @@
 ﻿@{
-    ViewData["Title"] = "Buzzlings - Account";
+    ViewData["Title"] = "Delete Hive";
 }
 
 @model Buzzlings.Data.Models.User
 
 <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
-    @if(Model.HiveId is not null)
-    {
-        <div class="text-center">
-            <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-                <div class="card custom-panel" style="width: 100%;">
-                    <div class="card-body p-1">
-                        <b>Delete hive</b>
-                    </div>
+    <div class="text-center">
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <b>Delete hive</b>
                 </div>
             </div>
+        </div>
+        @if(Model.HiveId is not null)
+        {
             <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
                 <div class="card custom-panel" style="width: 100%;">
                     <div class="card-body p-3">
@@ -27,25 +27,9 @@
                     </div>
                 </div>
             </div>
-            <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-                <div class="card custom-panel" style="width: 100%;">
-                    <div class="card-body p-1">
-                        <a asp-controller="Account" asp-action="Back" class="btn btn-dark w-48">Back</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="text-center">
-            <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-                <div class="card custom-panel" style="width: 100%;">
-                    <div class="card-body p-1">
-                        <b>Delete hive</b>
-                    </div>
-                </div>
-            </div>
+        }
+        else
+        {
             <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
                 <div class="card custom-panel" style="width: 100%;">
                     <div class="card-body p-3">
@@ -55,13 +39,13 @@
                     </div>
                 </div>
             </div>
-            <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
-                <div class="card custom-panel" style="width: 100%;">
-                    <div class="card-body p-1">
-                        <a asp-controller="Account" asp-action="Back" class="btn btn-dark w-48">Back</a>
-                    </div>
+        }
+        <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="card custom-panel" style="width: 100%;">
+                <div class="card-body p-1">
+                    <a asp-controller="Account" asp-action="Index" class="btn btn-dark w-48">Back</a>
                 </div>
             </div>
         </div>
-    }
+    </div>
 </div>

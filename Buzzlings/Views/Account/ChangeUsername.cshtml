@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
 @{
-    ViewData["Title"] = "Buzzlings - Account";
+    ViewData["Title"] = "Change Username";
 }
 
 @model Buzzlings.Web.Models.UpdateUsernameViewModel
@@ -42,9 +42,13 @@
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
             <div class="card custom-panel" style="width: 100%;">
                 <div class="card-body p-1">
-                    <a asp-controller="Account" asp-action="Back" class="btn btn-dark w-48">Back</a>
+                    <a asp-controller="Account" asp-action="Index" class="btn btn-dark w-48">Back</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

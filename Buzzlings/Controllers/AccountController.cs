@@ -218,11 +218,5 @@ namespace Buzzlings.Web.Controllers
         {
             return View();
         }
-
-        [Authorize]
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index", "Account");
-        }
     }
 }

@@ -17,10 +17,5 @@ namespace Buzzlings.Web.Controllers
 
             return View(topHives);
         }
-
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index", "Home");
-        }
     }
 }

@@ -1,11 +1,9 @@
-﻿using Buzzlings.BusinessLogic.Dtos;
-using Buzzlings.BusinessLogic.Services.Buzzling;
+﻿using Buzzlings.BusinessLogic.Services.Buzzling;
 using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.Simulation;
 using Buzzlings.BusinessLogic.Services.TopHive;
 using Buzzlings.BusinessLogic.Services.User;
-using Buzzlings.BusinessLogic.Simulation;
-using Buzzlings.BusinessLogic.Utils;
+using Buzzlings.Controllers;
 using Buzzlings.Data.Constants;
 using Buzzlings.Data.Models;
 using Buzzlings.Data.Repositories.Interfaces;
@@ -74,7 +72,7 @@ namespace Buzzlings.Web.Controllers
 
             await _userService.UpdateUserAsync(dashboardVM.User);
 
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -96,7 +94,7 @@ namespace Buzzlings.Web.Controllers
 
             TempData[IgnoreBuzzlingNameValidation] = true;
 
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> UpdateBuzzling(int id)
@@ -145,7 +143,7 @@ namespace Buzzlings.Web.Controllers
 
             await _buzzlingService.UpdateBuzzlingAsync(buzzling);
 
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -156,7 +154,7 @@ namespace Buzzlings.Web.Controllers
 
             await _buzzlingService.DeleteBuzzlingByIdAsync(id);
 
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> UpdateHiveStatus()
@@ -234,7 +232,7 @@ namespace Buzzlings.Web.Controllers
 
             await _signInManager.SignOutAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         private async Task PrepareDashboardViewModel(DashboardViewModel dashboardVM)

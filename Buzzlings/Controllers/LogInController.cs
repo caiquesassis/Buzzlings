@@ -46,12 +46,7 @@ namespace Buzzlings.Web.Controllers
                 return View("Index", logInVM);
             }
 
-            return RedirectToAction("Index", "Dashboard");
-        }
-
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(DashboardController.Index), "Dashboard");
         }
     }
 }
