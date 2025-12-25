@@ -1,8 +1,9 @@
-﻿@{
-    ViewData["Title"] = "Buzzlings - Log in";
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@{
+    ViewData["Title"] = "Register";
 }
 
-@model Buzzlings.Web.Models.LogInViewModel
+@model Buzzlings.Web.Models.RegisterViewModel
 
 @Html.AntiForgeryToken() <!-- CSRF protection -->
 
@@ -11,14 +12,14 @@
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
             <div class="card custom-panel" style="width: 100%;">
                 <div class="card-body p-1">
-                    <b>Log in</b>
+                    <b>Register</b>
                 </div>
             </div>
         </div>
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
             <div class="card custom-panel" style="max-width: 400px; width: 100%; margin: auto;">
                 <div class="card-body p-3">
-                    <form method="post" asp-controller="LogIn" asp-action="LogIn">
+                    <form method="post" asp-controller="Register" asp-action="Register">
                         <div class="mb-3">
                             <label asp-for="Username" class="form-label"><b>Username</b></label>
                             <input asp-for="Username" type="text" class="form-control" id="username" placeholder="Enter your username" />
@@ -35,12 +36,15 @@
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            @if (ViewData.ModelState.ContainsKey("InvalidLoginAttempt"))
+                            @if (ViewData.ModelState.ContainsKey("InvalidRegistrationAttempt"))
                             {
-                                <span class="text-danger">@ViewData.ModelState["InvalidLoginAttempt"]!.Errors.First().ErrorMessage</span>
+                                @foreach (ModelError errorMessage in ViewData.ModelState["InvalidRegistrationAttempt"]!.Errors)
+                                {
+                                    <p><span class="text-danger">@errorMessage.ErrorMessage</span></p>
+                                }
                             }
                         </div>
-                        <button type="submit" class="btn btn-dark">Log in</button>
+                        <button type="submit" class="btn btn-dark">Register</button>
                     </form>
                 </div>
             </div>
@@ -48,7 +52,7 @@
         <div class="custom-panel-wrapper mt-2" style="max-width: 400px; width: 100%; margin: auto;">
             <div class="card custom-panel" style="width: 100%;">
                 <div class="card-body p-1">
-                    <a asp-controller="LogIn" asp-action="Back" class="btn btn-dark w-48">Back</a>
+                    <a asp-controller="Register" asp-action="Back" class="btn btn-dark w-48">Back</a>
                 </div>
             </div>
         </div>

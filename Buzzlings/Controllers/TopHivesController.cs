@@ -11,7 +11,7 @@ namespace Buzzlings.Web.Controllers
             _topHiveService = topHiveService;
         }
 
-        public async Task<IActionResult> TopHives()
+        public async Task<IActionResult> Index()
         {
             IEnumerable<Data.Models.TopHive>? topHives = await _topHiveService.GetTopHivesAsync();
 

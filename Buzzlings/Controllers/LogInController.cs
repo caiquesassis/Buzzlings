@@ -17,7 +17,7 @@ namespace Buzzlings.Web.Controllers
             _signInManager = signInManager;
         }
 
-        public IActionResult LogIn()
+        public IActionResult Index()
         {
             if (User.Identity!.IsAuthenticated)
             {
@@ -33,7 +33,7 @@ namespace Buzzlings.Web.Controllers
         {
             if (ModelState.IsValid is false)
             {
-                return View(logInVM);
+                return View("Index", logInVM);
             }
 
             Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(logInVM.Username!, logInVM.Password!, false, false);
@@ -43,7 +43,7 @@ namespace Buzzlings.Web.Controllers
                 // Generic error message for security (prevents username enumeration)
                 ModelState.AddModelError("InvalidLoginAttempt", "Invalid login attempt.");
 
-                return View(logInVM);
+                return View("Index", logInVM);
             }
 
             return RedirectToAction("Index", "Dashboard");

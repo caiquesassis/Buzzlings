@@ -16,7 +16,7 @@ namespace Buzzlings.Web.Controllers
             _userService = userService;
         }
 
-        public IActionResult Register()
+        public IActionResult Index()
         {
             return View();
         }
@@ -27,7 +27,7 @@ namespace Buzzlings.Web.Controllers
         {
             if (ModelState.IsValid is false)
             {
-                return View(registerVM);
+                return View("Index", registerVM);
             }
 
             IdentityResult result = await _userService.RegisterNewUserAsync(registerVM.Username!, registerVM.Password!);
@@ -37,7 +37,7 @@ namespace Buzzlings.Web.Controllers
                 ModelState.AddIdentityErrors(result.Errors.Where(e => e.Code is "DuplicateUserName"), "Username");
                 ModelState.AddIdentityErrors(result.Errors.Where(e => e.Code is not "DuplicateUserName"), "InvalidRegistrationAttempt");
 
-                return View(registerVM);
+                return View("Index", registerVM);
             }
 
             return RedirectToAction("RegisterSuccess", "Register");

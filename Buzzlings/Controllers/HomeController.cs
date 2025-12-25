@@ -12,22 +12,22 @@ namespace Buzzlings.Controllers
 
         public IActionResult LogIn()
         {
-            return RedirectToAction("LogIn", "LogIn");
+            return RedirectToAction("Index", "LogIn");
         }
 
         public IActionResult Register()
         {
-            return RedirectToAction("Register", "Register");
+            return RedirectToAction("Index", "Register");
         }
 
         public IActionResult TopHives()
         {
-            return RedirectToAction("TopHives", "TopHives");
+            return RedirectToAction("Index", "TopHives");
         }
 
         public IActionResult About()
         {
-            return RedirectToAction("About", "About");
+            return RedirectToAction("Index", "About");
         }
     }
 }

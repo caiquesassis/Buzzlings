@@ -30,7 +30,7 @@ builder.Services.ConfigureApplicationCookie(options => {
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
     options.SlidingExpiration = true;
-    options.LoginPath = "/LogIn/LogIn"; // Redirect here if not logged in
+    options.LoginPath = "/LogIn/Index"; // Redirect here if not logged in
     options.LogoutPath = "/Home/Index"; // Logout page if the user logs out
 });
 
