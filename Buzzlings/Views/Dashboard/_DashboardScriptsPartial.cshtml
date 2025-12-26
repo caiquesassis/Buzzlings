@@ -1,6 +1,6 @@
 ﻿<script>
     let lastLogIndex = 0;
-    let hiveAge = @Model.User?.Hive?.Age;
+    let isRequestPending = false;
     const statusIntervalTimer = 6000;
 
     function filterBuzzlingsTable() {
@@ -49,33 +49,31 @@
         logContainer.scrollTop = logContainer.scrollHeight;
     }
 
-    function fetchLatestLogs() {
-        $.ajax({
-            url: "@Url.Action("GetEventLog", "Dashboard")",
-            type: "GET",
-            data: { lastLogIndex: lastLogIndex },
-            success: function(data) {
-                if (data && data.log && data.log.length > 0) {
-                    data.log.forEach(logMessage => {
-                        addEventLog(logMessage);
-                    });
-                }
+    function updateHiveStatus(isInitialLoad = false) {
+        if (isRequestPending) {
+            console.warn("Tick suppressed: Previous request still pending.");
+            return;
+        }
 
-                lastLogIndex = data.lastLogIndex;
-            },
-            error: function(xhr, status, error) {
-                console.error("Error fetching logs: ", error);
-            }
-        });
-    }
+        isRequestPending = true;
 
-    function updateHiveStatus() {
         $.ajax({
             url: "@Url.Action("UpdateHiveStatus", "Dashboard")",
             type: "GET",
+            data: {
+                lastLogIndex: lastLogIndex,
+                isInitialLoad: isInitialLoad
+            },
+            timeout: 10000,
             success: function (data) {
-                fetchLatestLogs();
+                //Fetch latest logs
+                if (data.log && data.log.length > 0) {
+                    data.log.forEach(logMessage => addEventLog(logMessage));
+                    lastLogIndex = data.lastLogIndex;
+                }
+
                 refreshBuzzlingsTable();
+
                 document.getElementById("hiveHappiness").innerHTML = "Happiness: " + data.happiness + "%";
                 document.getElementById("hiveAge").innerHTML = "Age: " + data.age;
                 document.getElementById("hiveAgeDescription").innerHTML = data.age !== 1 ? "<b> days old | </b>" : "<b> day old | </b>";
@@ -88,15 +86,13 @@
                 console.error("Error updating hive status: ", error);
             },
             complete: function(xhr) {
-                var data = xhr.responseJSON;
+                isRequestPending = false;
 
-                //Check if the simulation should still be running
-                //We only schedule the next tick if the last response wasn't a "failure" state
-                //If data is null (server error), we assume it's a glitch and retry.
+                const data = xhr.responseJSON;
+
+                // Schedule next tick if simulation is still active (or if request failed)
                 if (!data || data.happiness > 0) {
-                    //Schedule the next update ONLY after this one is done
-                    //This prevents syncing errors that happen with setInterval
-                    setTimeout(updateHiveStatus, statusIntervalTimer);
+                    setTimeout(function() { updateHiveStatus(false); }, statusIntervalTimer);
                 }
             }
         });
@@ -123,9 +119,12 @@
     }
 
     $(document).ready(function() {
-        fetchLatestLogs();
-        filterBuzzlingsTable();
-        setTimeout(updateHiveStatus, statusIntervalTimer);
+        //This id will only be found if the user has a Hive and it gets rendered
+        //We only want to run updateHiveStatus if a Hive is not null
+        //A bit hacky, not the best, but it works
+        if(document.getElementById("simulationdiv")) {
+            updateHiveStatus(true);
+        }
     });
 
 </script>

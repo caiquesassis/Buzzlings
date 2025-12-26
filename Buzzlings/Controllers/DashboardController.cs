@@ -157,19 +157,27 @@ namespace Buzzlings.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> UpdateHiveStatus()
+        public async Task<IActionResult> UpdateHiveStatus(int lastLogIndex = 0, bool isInitialLoad = false)
         {
-            int age = await _simulationService.IncrementHiveAge(User.GetUserId());
-            int happiness = await _simulationService.ProcessSimulationAsync(User.GetUserId());
+            int age;
+            int happiness;
 
-            return Json(new { happiness, age });
-        }
+            if (isInitialLoad)
+            {
+                User? user = await _userService.GetUserByIdAsync(User.GetUserId(), true);
 
-        public async Task<IActionResult> GetEventLog(int lastLogIndex = 0)
-        {
+                age = user?.Hive?.Age ?? 0;
+                happiness = user?.Hive?.Happiness ?? 100;
+            }
+            else
+            {
+                age = await _simulationService.IncrementHiveAge(User.GetUserId());
+                happiness = await _simulationService.ProcessSimulationAsync(User.GetUserId());
+            }
+
             var (newLogs, updatedLogIndex) = await _simulationService.GetLatestEventLogs(User.GetUserId(), lastLogIndex);
 
-            return Json(new { log = newLogs, lastLogIndex = updatedLogIndex });
+            return Json(new { happiness, age, log = newLogs, lastLogIndex = updatedLogIndex });
         }
 
         public async Task<IActionResult> GetBuzzlingsTablePartial()
