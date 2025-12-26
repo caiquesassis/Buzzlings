@@ -1,5 +1,4 @@
 ﻿using Buzzlings.Data.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Buzzlings.BusinessLogic.Services.TopHive
 {
