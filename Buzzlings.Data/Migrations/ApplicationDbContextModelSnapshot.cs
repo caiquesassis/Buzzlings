@@ -49,7 +49,7 @@ namespace Buzzlings.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Buzzlings");
+                    b.ToTable("Buzzlings", (string)null);
                 });
 
             modelBuilder.Entity("Buzzlings.Data.Models.BuzzlingRole", b =>
@@ -65,7 +65,7 @@ namespace Buzzlings.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BuzzlingRole");
+                    b.ToTable("BuzzlingRole", (string)null);
 
                     b.HasData(
                         new
@@ -124,7 +124,7 @@ namespace Buzzlings.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Hives");
+                    b.ToTable("Hives", (string)null);
                 });
 
             modelBuilder.Entity("Buzzlings.Data.Models.TopHive", b =>
@@ -150,7 +150,7 @@ namespace Buzzlings.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TopHives");
+                    b.ToTable("TopHives", (string)null);
                 });
 
             modelBuilder.Entity("Buzzlings.Data.Models.User", b =>
