@@ -8,4 +8,4 @@ In this simulation, you create and manage a colony of creatures, each with disti
 This project uses:
 - Entity Framework Core to handle database operations
 - Identity for Authentication
-- [?] for Tests
+- xUnit for Tests
