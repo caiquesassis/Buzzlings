@@ -1,9 +1,8 @@
-﻿
-using Buzzlings.BusinessLogic.Dtos;
+﻿using Buzzlings.BusinessLogic.Dtos;
 using Buzzlings.BusinessLogic.Services.Buzzling;
 using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.User;
-using Buzzlings.BusinessLogic.Simulation;
+using Buzzlings.BusinessLogic.Simulation.Interfaces;
 using Buzzlings.BusinessLogic.Utils;
 using Buzzlings.Data.Repositories.Interfaces;
 
@@ -15,17 +14,17 @@ namespace Buzzlings.BusinessLogic.Services.Simulation
         private readonly IHiveService _hiveService;
         private readonly IBuzzlingService _buzzlingService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly SimulationEventHandler _simulationEventHandler;
+        private readonly ISimulationEventHandler _simulationEventHandler;
 
         public SimulationService(IUserService userService, IHiveService hiveService,
-            IBuzzlingService buzzlingService, IUnitOfWork unitOfWork)
+            IBuzzlingService buzzlingService, IUnitOfWork unitOfWork,
+            ISimulationEventHandler simulationEventHandler)
         {
             _userService = userService;
             _hiveService = hiveService;
             _buzzlingService = buzzlingService;
             _unitOfWork = unitOfWork;
-
-            _simulationEventHandler = new SimulationEventHandler();
+            _simulationEventHandler = simulationEventHandler;
         }
 
         public async Task<int> ProcessSimulationAsync(string? userId)

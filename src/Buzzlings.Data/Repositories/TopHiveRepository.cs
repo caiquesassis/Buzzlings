@@ -61,5 +61,7 @@ namespace Buzzlings.Data.Repositories
         {
             await _dbContext.BulkUpdateAsync(topHives);
         }
+
+        public int GetTableBufferSize() => TableBufferSize;
     }
 }

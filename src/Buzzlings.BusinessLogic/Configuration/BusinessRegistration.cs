@@ -3,6 +3,8 @@ using Buzzlings.BusinessLogic.Services.Hive;
 using Buzzlings.BusinessLogic.Services.Simulation;
 using Buzzlings.BusinessLogic.Services.TopHive;
 using Buzzlings.BusinessLogic.Services.User;
+using Buzzlings.BusinessLogic.Simulation;
+using Buzzlings.BusinessLogic.Simulation.Interfaces;
 
 //We need to use this namespace so the extension methods show up in Program.cs without "using"
 namespace Microsoft.Extensions.DependencyInjection
@@ -15,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IHiveService, HiveService>();
             services.AddScoped<IBuzzlingService, BuzzlingService>();
             services.AddScoped<ITopHiveService, TopHiveService>();
+            services.AddScoped<ISimulationEventHandler, SimulationEventHandler>();
             services.AddScoped<ISimulationService, SimulationService>();
 
             return services;

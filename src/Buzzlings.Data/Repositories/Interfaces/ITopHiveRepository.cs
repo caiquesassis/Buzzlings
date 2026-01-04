@@ -8,5 +8,6 @@ namespace Buzzlings.Data.Repositories.Interfaces
         Task TrimTopHiveEntriesAsync();
         Task UpdateAsync(TopHive topHive);
         Task BulkUpdateAsync(ICollection<TopHive> topHives);
+        int GetTableBufferSize();
     }
 }

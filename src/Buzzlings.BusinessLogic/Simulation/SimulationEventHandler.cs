@@ -1,5 +1,6 @@
 ﻿using Buzzlings.BusinessLogic.Dtos;
 using Buzzlings.BusinessLogic.Models.Enums;
+using Buzzlings.BusinessLogic.Simulation.Interfaces;
 using Buzzlings.BusinessLogic.Utils;
 using Buzzlings.Data.Constants;
 using Buzzlings.Data.Models;
@@ -7,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Buzzlings.BusinessLogic.Simulation
 {
-    public class SimulationEventHandler
+    public class SimulationEventHandler : ISimulationEventHandler
     {
         private const int BuzzlingHappyMoodThreshold = BuzzlingConstants.MoodMaxRange / 2;
         private const int HappinessImpactMinValue = -10;
