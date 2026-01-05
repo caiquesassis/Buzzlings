@@ -11,7 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddPersistence(this IServiceCollection services, string? connectionString)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString,
+                sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(); //This handles the "not available" error
+                }));
 
             services.AddScoped<IHiveRepository, HiveRepository>();
             services.AddScoped<IBuzzlingRepository, BuzzlingRepository>();
