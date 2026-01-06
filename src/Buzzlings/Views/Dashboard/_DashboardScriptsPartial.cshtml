@@ -127,4 +127,8 @@
         }
     });
 
+    window.onbeforeunload = function() {
+        isRequestPending = true; //Block any further simulation ticks when leaving page
+    };
+
 </script>

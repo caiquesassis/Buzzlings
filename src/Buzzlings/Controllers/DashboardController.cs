@@ -159,6 +159,12 @@ namespace Buzzlings.Web.Controllers
 
         public async Task<IActionResult> UpdateHiveStatus(int lastLogIndex = 0, bool isInitialLoad = false)
         {
+            //Ensure it's an AJAX request (Optional but helpful) so it doesn't trigger it live by other means
+            if (Request.Headers["X-Requested-With"] != "XMLHttpRequest" && isInitialLoad is false)
+            {
+                return BadRequest();
+            }
+
             int age;
             int happiness;
 
