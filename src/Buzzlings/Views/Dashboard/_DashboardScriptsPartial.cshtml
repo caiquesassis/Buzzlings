@@ -123,6 +123,7 @@
         //We only want to run updateHiveStatus if a Hive is not null
         //A bit hacky, not the best, but it works
         if(document.getElementById("simulationdiv")) {
+            filterBuzzlingsTable();
             updateHiveStatus(true);
         }
     });
