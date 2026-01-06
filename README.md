@@ -1,8 +1,7 @@
 # Buzzlings 🐝
 A web-based simulation where you manage a dynamic colony of creatures called Buzzlings, balancing their needs and behaviors through creation and maintenance via CRUD operations.
 
-**Live Demo**: https://app-buzzlings-web-brazilsouth-prod-001.azurewebsites.net/ <br>
-*Note: The app uses Azure Serverless hosting. It may take longer to load for the first time due to the database "cold start".*
+**Live Demo**: https://app-buzzlings-web-brazilsouth-prod-001.azurewebsites.net/
 
 **API Documentation**: Accessible via **Scalar** at `/scalar/v1`
 
