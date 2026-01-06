@@ -52,14 +52,14 @@ namespace Buzzlings.Data.Repositories
                 .ExecuteDeleteAsync(); //We don't need to SaveChangesAsync, this already takes care of it
         }
 
-        public async Task UpdateAsync(TopHive topHive)
+        public void Update(TopHive topHive)
         {
-            await _dbContext.SingleUpdateAsync(topHive);
+            _dbContext.Update(topHive);
         }
 
-        public async Task BulkUpdateAsync(ICollection<TopHive> topHives)
+        public void BulkUpdate(ICollection<TopHive> topHives)
         {
-            await _dbContext.BulkUpdateAsync(topHives);
+            _dbContext.UpdateRange(topHives);
         }
 
         public int GetTableBufferSize() => TableBufferSize;

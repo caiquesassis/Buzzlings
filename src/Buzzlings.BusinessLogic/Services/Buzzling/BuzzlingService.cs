@@ -29,19 +29,19 @@ namespace Buzzlings.BusinessLogic.Services.Buzzling
 
         public async Task UpdateBuzzlingAsync(Data.Models.Buzzling buzzling)
         {
-            await _unitOfWork.BuzzlingRepository.UpdateAsync(buzzling);
+            _unitOfWork.BuzzlingRepository.UpdateAsync(buzzling);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task BulkUpdateBuzzlingsAsync(ICollection<Data.Models.Buzzling> buzzlings)
         {
-            await _unitOfWork.BuzzlingRepository.BulkUpdateAsync(buzzlings);
+            _unitOfWork.BuzzlingRepository.BulkUpdateAsync(buzzlings);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteBuzzlingAsync(Data.Models.Buzzling buzzling)
         {
-            await _unitOfWork.BuzzlingRepository.DeleteAsync(buzzling);
+            _unitOfWork.BuzzlingRepository.Delete(buzzling);
             await _unitOfWork.SaveAsync();
         }
 
@@ -57,7 +57,7 @@ namespace Buzzlings.BusinessLogic.Services.Buzzling
 
         public async Task DeleteBuzzlingsRangeAsync(ICollection<Data.Models.Buzzling> buzzlings)
         {
-            await _unitOfWork.BuzzlingRepository.DeleteRangeAsync(buzzlings);
+            _unitOfWork.BuzzlingRepository.DeleteRange(buzzlings);
             await _unitOfWork.SaveAsync();
         }
     }

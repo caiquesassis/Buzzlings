@@ -264,7 +264,7 @@ namespace Buzzlings.BusinessLogic.Simulation
 
         private string GetRandomEventLog<TKey>(Dictionary<TKey, List<string>> eventLogs, TKey eventType)
         {
-            if (eventLogs.TryGetValue(eventType, out List<string> logs))
+            if (eventLogs.TryGetValue(eventType, out List<string>? logs))
             {
                 return RandomUtils.GetRandomListElement(logs);
             }

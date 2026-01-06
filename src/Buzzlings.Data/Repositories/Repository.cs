@@ -49,14 +49,14 @@ namespace Buzzlings.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task DeleteAsync(T entity)
+        public void Delete(T entity)
         {
-            await dbSet.SingleDeleteAsync(entity);
+            dbSet.Remove(entity);
         }
 
-        public async Task DeleteRangeAsync(IEnumerable<T> entities)
+        public void DeleteRange(IEnumerable<T> entities)
         {
-            await dbSet.BulkDeleteAsync(entities);
+            dbSet.RemoveRange(entities);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Buzzlings.BusinessLogic.Services.Hive
 
         public async Task UpdateHiveAsync(Data.Models.Hive hive)
         {
-            await _unitOfWork.HiveRepository.UpdateAsync(hive);
+            _unitOfWork.HiveRepository.Update(hive);
             await _unitOfWork.SaveAsync();
         }
 
@@ -87,7 +87,7 @@ namespace Buzzlings.BusinessLogic.Services.Hive
 
         public async Task DeleteHiveAsync(Data.Models.Hive hive)
         {
-            await _unitOfWork.HiveRepository.DeleteAsync(hive);
+            _unitOfWork.HiveRepository.Delete(hive);
             await _unitOfWork.SaveAsync();
         }
     }

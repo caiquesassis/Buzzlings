@@ -37,7 +37,7 @@ namespace Buzzlings.BusinessLogic.Services.TopHive
 
         public async Task DeleteTopHivesRangeAsync(ICollection<Data.Models.TopHive> topHives)
         {
-            await _unitOfWork.TopHiveRepository.DeleteRangeAsync(topHives);
+            _unitOfWork.TopHiveRepository.DeleteRange(topHives);
             await _unitOfWork.SaveAsync();
         }
     }

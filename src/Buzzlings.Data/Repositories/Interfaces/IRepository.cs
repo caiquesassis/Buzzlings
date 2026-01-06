@@ -8,7 +8,7 @@ namespace Buzzlings.Data.Repositories.Interfaces
         Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null);
         Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
         Task<EntityEntry<T>> AddAsync(T entity);
-        Task DeleteAsync(T entity);
-        Task DeleteRangeAsync(IEnumerable<T> entities);
+        void Delete(T entity);
+        void DeleteRange(IEnumerable<T> entities);
     }
 }

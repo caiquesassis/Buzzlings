@@ -13,14 +13,14 @@ namespace Buzzlings.Data.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task UpdateAsync(Buzzling buzzling)
+        public void UpdateAsync(Buzzling buzzling)
         {
-            await _dbContext.SingleUpdateAsync(buzzling);
+            _dbContext.Update(buzzling);
         }
 
-        public async Task BulkUpdateAsync(ICollection<Buzzling> buzzlings)
+        public void BulkUpdateAsync(ICollection<Buzzling> buzzlings)
         {
-            await _dbContext.BulkUpdateAsync(buzzlings);
+            _dbContext.UpdateRange(buzzlings);
         }
     }
 }

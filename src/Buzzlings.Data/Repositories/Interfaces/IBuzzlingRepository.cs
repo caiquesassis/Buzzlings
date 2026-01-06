@@ -4,7 +4,7 @@ namespace Buzzlings.Data.Repositories.Interfaces
 {
     public interface IBuzzlingRepository : IRepository<Buzzling>
     {
-        Task UpdateAsync(Buzzling buzzling);
-        Task BulkUpdateAsync(ICollection<Buzzling> buzzlings);
+        void UpdateAsync(Buzzling buzzling);
+        void BulkUpdateAsync(ICollection<Buzzling> buzzlings);
     }
 }

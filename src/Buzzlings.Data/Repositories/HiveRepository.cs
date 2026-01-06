@@ -24,9 +24,9 @@ namespace Buzzlings.Data.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task UpdateAsync(Hive hive)
+        public void Update(Hive hive)
         {
-            await _dbContext.SingleUpdateAsync(hive);
+            _dbContext.Update(hive);
         }
     }
 }
