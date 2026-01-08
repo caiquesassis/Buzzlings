@@ -1,4 +1,7 @@
 # Buzzlings 🐝
+
+[![Build, Test and Deploy Buzzlings](https://github.com/caiquesassis/Buzzlings/actions/workflows/main_deploy.yml/badge.svg)](https://github.com/caiquesassis/Buzzlings/actions/workflows/main_deploy.yml)
+
 A web-based simulation where you manage a dynamic colony of creatures called Buzzlings, balancing their needs and behaviors through creation and maintenance via CRUD operations.
 
 **Live Demo**: https://app-buzzlings-web-brazilsouth-prod-001.azurewebsites.net/
