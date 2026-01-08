@@ -64,5 +64,6 @@ jobs: #Workflows are divided into jobs
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3 #The final act. It takes the files from ./publish_output and uploads them to our Azure App Service
+        with:
           app-name: 'app-buzzlings-web-brazilsouth-prod-001' #Tells Azure exactly which "slot" or website to overwrite with the new code.
           package: ./publish_output
