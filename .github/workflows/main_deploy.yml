@@ -5,6 +5,10 @@ on:
     branches:
       - main #Every time you push code to the main branch, the process starts automatically
   workflow_dispatch: #This adds the manual "Run Workflow" button in the GitHub UI
+  
+permissions:
+  id-token: write #This is required for requesting the JWT
+  contents: read  #This is required for actions/checkout
 
 jobs: #Workflows are divided into jobs
   build-and-test: #The ID of our first job
