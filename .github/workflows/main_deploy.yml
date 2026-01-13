@@ -9,6 +9,7 @@ on:
 permissions:
   id-token: write #This is required for requesting the JWT
   contents: read  #This is required for actions/checkout
+  packages: write #Required to push the Docker image to GitHub Container Registry
 
 jobs: #Workflows are divided into jobs
   build-and-test: #The ID of our first job
@@ -42,7 +43,7 @@ jobs: #Workflows are divided into jobs
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 #New: We need the source code again on this fresh machine to build the Docker image
+        uses: actions/checkout@v4 #We need the source code again on this fresh machine to build the Docker image
 
       - name: Login to Azure
         uses: azure/login@v2 #This is where the machine "logs in" to our Azure account
@@ -51,26 +52,29 @@ jobs: #Workflows are divided into jobs
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Login to ACR
-        #Uses the existing Azure login to authenticate specifically with your private Container Registry
-        run: az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
+      - name: Login to GHCR
+        #Authenticate with GitHub's registry using the automatic GITHUB_TOKEN provided by the runner
+        uses: docker/login-action@v3 
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Image
-        #This step builds the image using your Dockerfile and pushes it to Azure
+        #This step builds the image using your Dockerfile and pushes it to GHCR
         run: | #The "|" is a Block Scalar Header, which defines everything below this line (and indented) as one single block of text
-          #Build the image and tag it with the unique GitHub Run ID for versioning
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }} .
-          #Push the unique version to the registry
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }}
+          #Create a variable with the full image path (owner name must be lowercase)
+          IMAGE_PATH=ghcr.io/${{ github.repository_owner }}/buzzlings-web
           
-          #Also tag it as 'latest' so the Web App knows this is the most current version
-          docker tag ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }} ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:latest
-          #Push the 'latest' tag to the registry
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:latest
+          #Build the image and tag it with both the unique Run ID and 'latest'
+          docker build -t $IMAGE_PATH:${{ github.run_id }} -t $IMAGE_PATH:latest .
+          
+          #Push all tags to GitHub Container Registry
+          docker push $IMAGE_PATH --all-tags
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3 #The final act.
         with:
           app-name: 'app-buzzlings-web-brazilsouth-prod-001' #Tells Azure exactly which "slot" or website to overwrite.
-          #Instead of a file package, we provide the full path to the Docker image we just pushed
-          images: '${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }}'
+          #Point to the GitHub Container Registry image using the unique run_id to force a fresh pull
+          images: 'ghcr.io/${{ github.repository_owner }}/buzzlings-web:${{ github.run_id }}'
