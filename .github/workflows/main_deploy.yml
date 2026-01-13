@@ -5,7 +5,7 @@ on:
     branches:
       - main #Every time you push code to the main branch, the process starts automatically
   workflow_dispatch: #This adds the manual "Run Workflow" button in the GitHub UI
-  
+
 permissions:
   id-token: write #This is required for requesting the JWT
   contents: read  #This is required for actions/checkout
@@ -35,28 +35,14 @@ jobs: #Workflows are divided into jobs
         #SQLite tests work out of the box on the runner
         run: dotnet test Buzzlings.sln --no-build --configuration Release --verbosity normal #It runs all tests in tests/Buzzlings.Tests/. Because we use SQLite, it creates the DB file in the machine's RAM, runs the tests, and deletes it. If any test fails, the workflow stops here and won't deploy.
 
-      - name: Publish Web App
-        #Publishing the Web project (the MVC/Frontend part)
-        run: dotnet publish src/Buzzlings/Buzzlings.Web.csproj -c Release -o ./publish_output #This prepares the "Final Package." It gathers only the files needed to run the app (DLLs, Views, wwwroot) and puts them in a folder called ./publish_output
-
-      #We upload the artifact so the next job can use it (best practice for security)
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4 #This saves the ./publish_output folder in GitHub's "cloud storage." This is safer than passing files directly between jobs
-        with:
-          name: webapp-dist
-          path: ./publish_output
-
   deploy:
     name: Deploy to Azure
     needs: build-and-test #Only runs if tests pass, this is critical. It tells GitHub: "Do not start the deployment unless the Build and Test job finished successfully."
     runs-on: ubuntu-latest #A second fresh machine is used for the deployment phase
     
     steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4 #We download that "Final Package" we saved before
-        with:
-          name: webapp-dist
-          path: ./publish_output
+      - name: Checkout Code
+        uses: actions/checkout@v4 #New: We need the source code again on this fresh machine to build the Docker image
 
       - name: Login to Azure
         uses: azure/login@v2 #This is where the machine "logs in" to our Azure account
@@ -65,8 +51,26 @@ jobs: #Workflows are divided into jobs
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Login to ACR
+        #Uses the existing Azure login to authenticate specifically with your private Container Registry
+        run: az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
+
+      - name: Build and Push Image
+        #This step builds the image using your Dockerfile and pushes it to Azure
+        run: | #The "|" is a Block Scalar Header, which defines everything below this line (and indented) as one single block of text
+          #Build the image and tag it with the unique GitHub Run ID for versioning
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }} .
+          #Push the unique version to the registry
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }}
+          
+          #Also tag it as 'latest' so the Web App knows this is the most current version
+          docker tag ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }} ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:latest
+          #Push the 'latest' tag to the registry
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:latest
+
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3 #The final act. It takes the files from ./publish_output and uploads them to our Azure App Service
+        uses: azure/webapps-deploy@v3 #The final act.
         with:
-          app-name: 'app-buzzlings-web-brazilsouth-prod-001' #Tells Azure exactly which "slot" or website to overwrite with the new code.
-          package: ./publish_output
+          app-name: 'app-buzzlings-web-brazilsouth-prod-001' #Tells Azure exactly which "slot" or website to overwrite.
+          #Instead of a file package, we provide the full path to the Docker image we just pushed
+          images: '${{ secrets.ACR_LOGIN_SERVER }}/buzzlings-web:${{ github.run_id }}'

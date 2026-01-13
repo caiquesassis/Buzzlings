@@ -131,4 +131,28 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 app.MapOpenApi(); //Scans the code, finds controllers, generates a JSON that describes the API
 app.MapScalarApiReference(); //Generates the interactive API UI based on the JSON generated above
 
+//This code is so we can check for and run Migrations automatically every time the app is run
+//Create a "Scope" to resolve services
+//Since ApplicationDbContext is 'Scoped', we can't grab it directly from the root provider.
+using (var scope = app.Services.CreateScope())
+{
+    //Access the Service Provider for this temporary scope
+    var services = scope.ServiceProvider;
+    try
+    {
+        //Ask the system for our Database Context
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+        //This looks at the 'Migrations' folder and compares it to the 'History' table in the DB.
+        //It executes any .cs migration files that haven't been run yet.
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        //Safety net: If the DB is offline, the app logs the error instead of crashing immediately.
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+}
+
 app.Run();
