@@ -129,7 +129,21 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 //In a real-world production app, it'd be best to wrap this in if(app.Environment.IsDevelopment())
 //I'm leaving it enabled here so the API can be interacted with in the live demo
 app.MapOpenApi(); //Scans the code, finds controllers, generates a JSON that describes the API
-app.MapScalarApiReference(); //Generates the interactive API UI based on the JSON generated above
+//app.MapScalarApiReference generates the interactive API UI based on the JSON generated above
+app.MapScalarApiReference(options =>
+{
+    //Environment variable we set in the Azure App Service
+    //Just so we prevent hardcoding it here in the code...
+    //This is needed because the Scalar API cannot resolve the correct URL / Port within the container
+    //So we need to call from the actual server (the Azure App Service website URL)
+    var prodUrl = builder.Configuration["ApiSettings:BaseUrl"];
+
+    //However, this is only in a production environment. Locally, it already works as it should
+    if (!app.Environment.IsDevelopment() && !string.IsNullOrEmpty(prodUrl))
+    {
+        options.Servers = [new ScalarServer(prodUrl)];
+    }
+});
 
 //This code is so we can check for and run Migrations automatically every time the app is run
 //Create a "Scope" to resolve services
