@@ -46,5 +46,6 @@ In this simulation, you create and manage a colony of creatures, each with disti
 **Installation**
 1. Clone the repository.
 2. Database Configuration: Update the `DefaultConnection` string in `appsettings.json` with your local SQL Server instance. (using **User Secrets** is recommended for security)
-3. Migrations: Run `Update-Database` via Package Manager Console (target the Data project).
-4. Run: Execute the `Buzzlings.Web` project.
+3. Run: Execute the `Buzzlings.Web` project. The application will automatically create and migrate the local database on startup.
+
+*Note: For production, the app is configured to use Azure SQL via environment variables.*
